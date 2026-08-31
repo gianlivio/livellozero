@@ -63,6 +63,11 @@ a {
   font-size: 12px;
   color: var(--accento);
   letter-spacing: 0.08em;
+  text-decoration: none;
+}
+
+.categoria:hover {
+  text-decoration: underline;
 }
 
 .blocco {
@@ -204,6 +209,16 @@ a {
   margin: 14px 0 18px;
 }
 
+.apertura-testo h1 a {
+  color: var(--testo);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.apertura-testo h1 a:hover {
+  color: var(--accento);
+}
+
 .apertura-testo .sommario {
   color: var(--tenue);
   max-width: 46ch;
@@ -337,6 +352,204 @@ a {
   color: var(--tenue);
 }
 
+.pagina-categoria {
+  padding: 56px 28px;
+}
+
+.pagina-categoria h1 {
+  font-family: var(--font-archivo), sans-serif;
+  font-weight: 700;
+  font-size: clamp(30px, 4.5vw, 42px);
+  letter-spacing: -0.02em;
+  margin-bottom: 12px;
+}
+
+.pagina-categoria .descrizione {
+  color: var(--tenue);
+  max-width: 60ch;
+  margin-bottom: 40px;
+}
+
+.pagina-categoria .vuoto {
+  color: var(--tenue);
+}
+
+.pagina-articolo {
+  max-width: 68ch;
+  margin: 0 auto;
+  padding: 56px 28px;
+}
+
+.pagina-articolo .categoria {
+  display: inline-block;
+  margin-bottom: 14px;
+}
+
+.pagina-articolo h1 {
+  font-family: var(--font-archivo), sans-serif;
+  font-weight: 700;
+  font-size: clamp(32px, 4.5vw, 44px);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  margin-bottom: 16px;
+}
+
+.articolo-meta {
+  color: var(--tenue);
+  font-size: 14px;
+  margin-bottom: 28px;
+}
+
+.articolo-immagine {
+  aspect-ratio: 16 / 9;
+  margin-bottom: 32px;
+}
+
+.articolo-corpo p {
+  font-size: 19px;
+  line-height: 1.75;
+  margin-bottom: 22px;
+}
+
+.articolo-corpo p:last-child {
+  margin-bottom: 0;
+}
+
+.articolo-continua {
+  margin-top: 64px;
+  padding-top: 40px;
+  border-top: 1px solid var(--linea);
+}
+
+.articolo-continua h2 {
+  font-family: var(--font-archivo), sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--tenue);
+  margin-bottom: 24px;
+}
+
+.pagina-chi-sono {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 30px;
+  align-items: start;
+  padding: 56px 28px;
+}
+
+.chi-sono-foto {
+  aspect-ratio: 1 / 1;
+}
+
+.pagina-chi-sono h1 {
+  font-family: var(--font-archivo), sans-serif;
+  font-weight: 700;
+  font-size: clamp(30px, 4.5vw, 40px);
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+}
+
+.pagina-chi-sono p {
+  color: var(--tenue);
+  max-width: 62ch;
+  margin-bottom: 14px;
+}
+
+.chi-sono-contatti {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.chi-sono-contatti a {
+  align-self: flex-start;
+  text-decoration: none;
+  color: var(--testo);
+  border-bottom: 1px solid var(--accento);
+  padding-bottom: 2px;
+}
+
+.pagina-progetto {
+  padding: 56px 28px;
+}
+
+.pagina-progetto h1 {
+  font-family: var(--font-archivo), sans-serif;
+  font-weight: 700;
+  font-size: clamp(30px, 4.5vw, 42px);
+  letter-spacing: -0.02em;
+  margin-bottom: 24px;
+}
+
+.progetto-corpo {
+  max-width: 68ch;
+  margin-bottom: 40px;
+}
+
+.progetto-corpo p {
+  color: var(--tenue);
+  margin-bottom: 16px;
+}
+
+.progetto-sostegno {
+  max-width: 68ch;
+  border: 1px solid var(--linea);
+  padding: 26px;
+}
+
+.progetto-sostegno h2 {
+  font-family: var(--font-archivo), sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.progetto-sostegno p {
+  color: var(--tenue);
+  margin-bottom: 18px;
+}
+
+.pulsante-accento {
+  display: inline-block;
+  background: var(--accento);
+  color: #fff;
+  text-decoration: none;
+  font-family: var(--font-ibm-plex-sans), sans-serif;
+  font-weight: 600;
+  padding: 12px 22px;
+  border: none;
+}
+
+.pagina-404 {
+  padding: 56px 28px;
+}
+
+.pagina-404-immagine {
+  height: clamp(180px, 30vw, 320px);
+  margin-bottom: 32px;
+}
+
+.pagina-404 h1 {
+  font-family: var(--font-archivo), sans-serif;
+  font-weight: 700;
+  font-size: clamp(28px, 4vw, 38px);
+  letter-spacing: -0.02em;
+  margin-bottom: 14px;
+}
+
+.pagina-404 p {
+  color: var(--tenue);
+  margin-bottom: 22px;
+}
+
+.pagina-404 a {
+  text-decoration: none;
+  color: var(--testo);
+  border-bottom: 1px solid var(--accento);
+  padding-bottom: 2px;
+}
+
 @media (max-width: 760px) {
   .testata-interna {
     flex-wrap: wrap;
@@ -360,6 +573,10 @@ a {
   }
 
   .autore {
+    grid-template-columns: 1fr;
+  }
+
+  .pagina-chi-sono {
     grid-template-columns: 1fr;
   }
 
