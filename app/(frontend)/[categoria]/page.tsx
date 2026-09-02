@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -30,7 +31,7 @@ export default async function PaginaCategoria(
   const info = CATEGORIE.find((c) => c.chiave === categoria);
   if (!info) notFound();
 
-  const articoli = articoliPerCategoria(info.chiave);
+  const articoli = await articoliPerCategoria(info.chiave);
 
   return (
     <section className="guscio pagina-categoria">
@@ -43,10 +44,22 @@ export default async function PaginaCategoria(
         <div className="elenco-pezzi">
           {articoli.map((articolo) => (
             <article className="pezzo" key={articolo.slug}>
-              <div
-                className="blocco pezzo-immagine"
-                data-eti="immagine articolo"
-              />
+              {articolo.copertina ? (
+                <div className="pezzo-immagine">
+                  <Image
+                    src={articolo.copertina.url}
+                    alt={articolo.copertina.alt}
+                    fill
+                    sizes="168px"
+                    style={{ objectFit: "cover" }}
+                  />
+                </div>
+              ) : (
+                <div
+                  className="blocco pezzo-immagine"
+                  data-eti="immagine articolo"
+                />
+              )}
               <div className="pezzo-testo">
                 <Link href={`/${articolo.categoria}`} className="categoria">
                   {info.nome}

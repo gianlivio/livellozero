@@ -231,6 +231,8 @@ a {
 }
 
 .apertura-immagine {
+  position: relative;
+  overflow: hidden;
   aspect-ratio: 4 / 3;
 }
 
@@ -264,6 +266,8 @@ a {
 }
 
 .pezzo-immagine {
+  position: relative;
+  overflow: hidden;
   aspect-ratio: 16 / 10;
 }
 
@@ -401,6 +405,8 @@ a {
 }
 
 .articolo-immagine {
+  position: relative;
+  overflow: hidden;
   aspect-ratio: 16 / 9;
   margin-bottom: 32px;
 }

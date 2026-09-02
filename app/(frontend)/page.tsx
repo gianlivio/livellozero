@@ -1,8 +1,9 @@
+import Image from "next/image";
 import Link from "next/link";
 import { dataLeggibile, nomeCategoria, tuttiGliArticoli } from "@/lib/articoli";
 
-export default function Home() {
-  const articoli = tuttiGliArticoli();
+export default async function Home() {
+  const articoli = await tuttiGliArticoli();
   const apertura = articoli[0];
   const elenco = articoli.slice(1, 6);
 
@@ -19,10 +20,23 @@ export default function Home() {
           <p className="sommario">{apertura.sommario}</p>
           <p className="tempo-lettura">Lettura da {apertura.minuti} minuti</p>
         </div>
-        <div
-          className="blocco apertura-immagine"
-          data-eti="immagine di apertura"
-        />
+        {apertura.copertina ? (
+          <div className="apertura-immagine">
+            <Image
+              src={apertura.copertina.url}
+              alt={apertura.copertina.alt}
+              fill
+              sizes="(max-width: 720px) 100vw, 50vw"
+              style={{ objectFit: "cover" }}
+              priority
+            />
+          </div>
+        ) : (
+          <div
+            className="blocco apertura-immagine"
+            data-eti="immagine di apertura"
+          />
+        )}
       </section>
 
       <section className="guscio sezione-articoli">
@@ -30,10 +44,22 @@ export default function Home() {
         <div className="elenco-pezzi">
           {elenco.map((articolo) => (
             <article className="pezzo" key={articolo.slug}>
-              <div
-                className="blocco pezzo-immagine"
-                data-eti="immagine articolo"
-              />
+              {articolo.copertina ? (
+                <div className="pezzo-immagine">
+                  <Image
+                    src={articolo.copertina.url}
+                    alt={articolo.copertina.alt}
+                    fill
+                    sizes="168px"
+                    style={{ objectFit: "cover" }}
+                  />
+                </div>
+              ) : (
+                <div
+                  className="blocco pezzo-immagine"
+                  data-eti="immagine articolo"
+                />
+              )}
               <div className="pezzo-testo">
                 <Link href={`/${articolo.categoria}`} className="categoria">
                   {nomeCategoria(articolo.categoria)}

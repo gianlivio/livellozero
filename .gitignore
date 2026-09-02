@@ -17,6 +17,9 @@
 /.next/
 /out/
 
+# payload uploads (local storage, not committed)
+/media/
+
 # production
 /build
 
