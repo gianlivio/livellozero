@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { dataLeggibile, nomeCategoria, tuttiGliArticoli } from "@/lib/articoli";
 
+export const revalidate = 3600;
+
 export default async function Home() {
   const articoli = await tuttiGliArticoli();
   const apertura = articoli[0];

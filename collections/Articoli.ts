@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { revalidatePath } from 'next/cache'
 
 function generaSlug(testo: string): string {
   return testo
@@ -10,6 +11,21 @@ function generaSlug(testo: string): string {
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '')
+}
+
+function rivalidaPercorsi(doc: { categoria?: unknown; slug?: unknown } | null | undefined) {
+  if (!doc) return
+  try {
+    revalidatePath('/')
+    if (typeof doc.categoria === 'string') {
+      revalidatePath(`/${doc.categoria}`)
+    }
+    if (typeof doc.slug === 'string') {
+      revalidatePath(`/articoli/${doc.slug}`)
+    }
+  } catch {
+    // Payload gira fuori da un contesto Next (es. CLI/migrazioni): niente da rigenerare
+  }
 }
 
 function estraiTesto(nodo: unknown): string {
@@ -33,6 +49,25 @@ export const Articoli: CollectionConfig = {
   admin: {
     useAsTitle: 'titolo',
     defaultColumns: ['titolo', 'categoria', 'dataPubblicazione', '_status'],
+  },
+  hooks: {
+    afterChange: [
+      ({ doc, previousDoc }) => {
+        rivalidaPercorsi(doc)
+        if (
+          previousDoc &&
+          (previousDoc.categoria !== doc.categoria ||
+            previousDoc.slug !== doc.slug)
+        ) {
+          rivalidaPercorsi(previousDoc)
+        }
+      },
+    ],
+    afterDelete: [
+      ({ doc }) => {
+        rivalidaPercorsi(doc)
+      },
+    ],
   },
   versions: {
     drafts: true,

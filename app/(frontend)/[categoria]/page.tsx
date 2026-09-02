@@ -8,6 +8,8 @@ import {
   dataLeggibile,
 } from "@/lib/articoli";
 
+export const revalidate = 3600;
+
 export function generateStaticParams() {
   return CATEGORIE.map((c) => ({ categoria: c.chiave }));
 }
