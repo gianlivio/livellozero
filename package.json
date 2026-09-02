@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "migrazione:crea": "tsx scripts/migrazione.mts",
+    "migrazione:applica": "tsx scripts/migrazione-applica.mts",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.88.0",
@@ -25,6 +28,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.3",
+    "patch-package": "^8.0.1",
+    "tsx": "4.23.13",
     "typescript": "^5"
   },
   "overrides": {

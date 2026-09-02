@@ -1,5 +1,16 @@
 import type { CollectionConfig } from 'payload'
 import { revalidatePath } from 'next/cache'
+import {
+  BlockquoteFeature,
+  BoldFeature,
+  HeadingFeature,
+  InlineToolbarFeature,
+  ItalicFeature,
+  LinkFeature,
+  ParagraphFeature,
+  UploadFeature,
+  lexicalEditor,
+} from '@payloadcms/richtext-lexical'
 
 function generaSlug(testo: string): string {
   return testo
@@ -134,6 +145,30 @@ export const Articoli: CollectionConfig = {
       type: 'richText',
       required: true,
       label: "Testo dell'articolo",
+      editor: lexicalEditor({
+        features: [
+          ParagraphFeature(),
+          BoldFeature(),
+          ItalicFeature(),
+          HeadingFeature({ enabledHeadingSizes: ['h2', 'h3'] }),
+          BlockquoteFeature(),
+          LinkFeature(),
+          UploadFeature({
+            collections: {
+              media: {
+                fields: [
+                  {
+                    name: 'didascalia',
+                    type: 'text',
+                    label: 'Didascalia',
+                  },
+                ],
+              },
+            },
+          }),
+          InlineToolbarFeature(),
+        ],
+      }),
     },
     {
       name: 'dataPubblicazione',

@@ -420,6 +420,12 @@ a {
   margin-bottom: 16px;
 }
 
+.articolo-autore {
+  color: var(--tenue);
+  font-size: 15px;
+  margin-bottom: 6px;
+}
+
 .articolo-meta {
   color: var(--tenue);
   font-size: 14px;
@@ -436,11 +442,68 @@ a {
 .articolo-corpo p {
   font-size: 19px;
   line-height: 1.75;
-  margin-bottom: 22px;
+  margin-bottom: 1.4em;
 }
 
 .articolo-corpo p:last-child {
   margin-bottom: 0;
+}
+
+.articolo-corpo h2 {
+  font-family: var(--font-archivo), sans-serif;
+  font-weight: 600;
+  font-size: 28px;
+  letter-spacing: -0.015em;
+  margin-top: 2.2em;
+  margin-bottom: 0.6em;
+}
+
+.articolo-corpo h3 {
+  font-family: var(--font-archivo), sans-serif;
+  font-weight: 600;
+  font-size: 21px;
+  margin-top: 1.8em;
+  margin-bottom: 0.5em;
+}
+
+.articolo-corpo em {
+  font-style: italic;
+  color: var(--testo);
+}
+
+.articolo-corpo strong {
+  font-weight: 600;
+  color: var(--testo);
+}
+
+.articolo-corpo blockquote {
+  border-left: 2px solid var(--accento);
+  padding-left: 20px;
+  color: var(--tenue);
+}
+
+.articolo-corpo a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid var(--accento);
+}
+
+.articolo-figura {
+  margin: 32px 0;
+}
+
+.articolo-figura img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.articolo-didascalia {
+  margin-top: 8px;
+  color: var(--tenue);
+  font-size: 14px;
+  font-style: italic;
+  text-align: left;
 }
 
 .articolo-continua {

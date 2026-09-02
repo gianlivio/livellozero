@@ -6,10 +6,22 @@ export const Media: CollectionConfig = {
     singular: 'Immagine',
     plural: 'Immagini',
   },
+  admin: {
+    useAsTitle: 'titolo',
+    defaultColumns: ['titolo', 'alt', 'updatedAt'],
+  },
   access: {
     read: () => true,
   },
   fields: [
+    {
+      name: 'titolo',
+      type: 'text',
+      label: 'Titolo',
+      admin: {
+        description: "Serve a ritrovare l'immagine nell'archivio.",
+      },
+    },
     {
       name: 'alt',
       type: 'text',
