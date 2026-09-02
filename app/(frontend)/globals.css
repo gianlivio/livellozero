@@ -236,6 +236,28 @@ a {
   aspect-ratio: 4 / 3;
 }
 
+.sezione-in-arrivo {
+  padding: 56px 28px;
+}
+
+.sezione-in-arrivo .blocco {
+  aspect-ratio: 21 / 9;
+  margin-bottom: 24px;
+}
+
+.sezione-in-arrivo h1 {
+  font-family: var(--font-archivo), sans-serif;
+  font-weight: 700;
+  font-size: clamp(31px, 4vw, 46px);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  margin-bottom: 10px;
+}
+
+.sezione-in-arrivo .vuoto {
+  color: var(--tenue);
+}
+
 .sezione-articoli {
   padding: 40px 28px 56px;
 }

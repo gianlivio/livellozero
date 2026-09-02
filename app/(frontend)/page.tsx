@@ -9,73 +9,87 @@ export default async function Home() {
 
   return (
     <>
-      <section className="guscio apertura">
-        <div className="apertura-testo">
-          <Link href={`/${apertura.categoria}`} className="categoria">
-            {nomeCategoria(apertura.categoria)}
-          </Link>
-          <h1>
-            <Link href={`/articoli/${apertura.slug}`}>{apertura.titolo}</Link>
-          </h1>
-          <p className="sommario">{apertura.sommario}</p>
-          <p className="tempo-lettura">Lettura da {apertura.minuti} minuti</p>
-        </div>
-        {apertura.copertina ? (
-          <div className="apertura-immagine">
-            <Image
-              src={apertura.copertina.url}
-              alt={apertura.copertina.alt}
-              fill
-              sizes="(max-width: 720px) 100vw, 50vw"
-              style={{ objectFit: "cover" }}
-              priority
-            />
+      {apertura ? (
+        <section className="guscio apertura">
+          <div className="apertura-testo">
+            <Link href={`/${apertura.categoria}`} className="categoria">
+              {nomeCategoria(apertura.categoria)}
+            </Link>
+            <h1>
+              <Link href={`/articoli/${apertura.slug}`}>
+                {apertura.titolo}
+              </Link>
+            </h1>
+            <p className="sommario">{apertura.sommario}</p>
+            <p className="tempo-lettura">
+              Lettura da {apertura.minuti} minuti
+            </p>
           </div>
-        ) : (
-          <div
-            className="blocco apertura-immagine"
-            data-eti="immagine di apertura"
-          />
-        )}
-      </section>
+          {apertura.copertina ? (
+            <div className="apertura-immagine">
+              <Image
+                src={apertura.copertina.url}
+                alt={apertura.copertina.alt}
+                fill
+                sizes="(max-width: 720px) 100vw, 50vw"
+                style={{ objectFit: "cover" }}
+                priority
+              />
+            </div>
+          ) : (
+            <div
+              className="blocco apertura-immagine"
+              data-eti="immagine di apertura"
+            />
+          )}
+        </section>
+      ) : (
+        <section className="guscio sezione-in-arrivo">
+          <div className="blocco" data-eti="in arrivo" />
+          <h1>Il sito sta per partire</h1>
+          <p className="vuoto">I primi articoli arrivano a breve.</p>
+        </section>
+      )}
 
-      <section className="guscio sezione-articoli">
-        <h2>Ultimi articoli</h2>
-        <div className="elenco-pezzi">
-          {elenco.map((articolo) => (
-            <article className="pezzo" key={articolo.slug}>
-              {articolo.copertina ? (
-                <div className="pezzo-immagine">
-                  <Image
-                    src={articolo.copertina.url}
-                    alt={articolo.copertina.alt}
-                    fill
-                    sizes="168px"
-                    style={{ objectFit: "cover" }}
+      {elenco.length > 0 && (
+        <section className="guscio sezione-articoli">
+          <h2>Ultimi articoli</h2>
+          <div className="elenco-pezzi">
+            {elenco.map((articolo) => (
+              <article className="pezzo" key={articolo.slug}>
+                {articolo.copertina ? (
+                  <div className="pezzo-immagine">
+                    <Image
+                      src={articolo.copertina.url}
+                      alt={articolo.copertina.alt}
+                      fill
+                      sizes="168px"
+                      style={{ objectFit: "cover" }}
+                    />
+                  </div>
+                ) : (
+                  <div
+                    className="blocco pezzo-immagine"
+                    data-eti="immagine articolo"
                   />
-                </div>
-              ) : (
-                <div
-                  className="blocco pezzo-immagine"
-                  data-eti="immagine articolo"
-                />
-              )}
-              <div className="pezzo-testo">
-                <Link href={`/${articolo.categoria}`} className="categoria">
-                  {nomeCategoria(articolo.categoria)}
-                </Link>
-                <h3>
-                  <Link href={`/articoli/${articolo.slug}`}>
-                    {articolo.titolo}
+                )}
+                <div className="pezzo-testo">
+                  <Link href={`/${articolo.categoria}`} className="categoria">
+                    {nomeCategoria(articolo.categoria)}
                   </Link>
-                </h3>
-                <p className="sommario">{articolo.sommario}</p>
-                <p className="data">{dataLeggibile(articolo.data)}</p>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
+                  <h3>
+                    <Link href={`/articoli/${articolo.slug}`}>
+                      {articolo.titolo}
+                    </Link>
+                  </h3>
+                  <p className="sommario">{articolo.sommario}</p>
+                  <p className="data">{dataLeggibile(articolo.data)}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="guscio autore">
         <div className="blocco autore-foto" data-eti="foto" />
