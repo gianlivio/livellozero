@@ -50,6 +50,7 @@ export default buildConfig({
       collections: { media: true },
       token: process.env.BLOB_READ_WRITE_TOKEN,
       clientUploads: false,
+      addRandomSuffix: true,
     }),
   ],
 });

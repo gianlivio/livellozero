@@ -62,6 +62,20 @@ export async function generateMetadata(
   return {
     title: `${articolo.titolo} — Livello Zero`,
     description: articolo.sommario,
+    openGraph: {
+      title: `${articolo.titolo} — Livello Zero`,
+      description: articolo.sommario,
+      ...(articolo.copertina
+        ? {
+            images: [
+              {
+                url: articolo.copertina.url,
+                alt: articolo.copertina.alt,
+              },
+            ],
+          }
+        : {}),
+    },
   };
 }
 
@@ -85,23 +99,6 @@ export default async function PaginaArticolo(
       <p className="articolo-meta">
         {dataLeggibile(articolo.data)} — Lettura da {articolo.minuti} minuti
       </p>
-      {articolo.copertina ? (
-        <div className="articolo-immagine">
-          <Image
-            src={articolo.copertina.url}
-            alt={articolo.copertina.alt}
-            fill
-            sizes="(max-width: 720px) 100vw, 720px"
-            style={{ objectFit: "cover" }}
-            priority
-          />
-        </div>
-      ) : (
-        <div
-          className="blocco articolo-immagine"
-          data-eti="immagine dell'articolo"
-        />
-      )}
       <RichText
         className="articolo-corpo"
         data={articolo.corpo}

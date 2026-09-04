@@ -432,13 +432,6 @@ a {
   margin-bottom: 28px;
 }
 
-.articolo-immagine {
-  position: relative;
-  overflow: hidden;
-  aspect-ratio: 16 / 9;
-  margin-bottom: 32px;
-}
-
 .articolo-corpo p {
   font-size: 19px;
   line-height: 1.75;
