@@ -94,6 +94,18 @@ export default async function PaginaArticolo(
       <Link href={`/${articolo.categoria}`} className="categoria">
         {nomeCategoria(articolo.categoria)}
       </Link>
+      {articolo.copertina && (
+        <div className="articolo-immagine">
+          <Image
+            src={articolo.copertina.url}
+            alt={articolo.copertina.alt}
+            fill
+            sizes="(max-width: 720px) 100vw, 720px"
+            style={{ objectFit: "cover" }}
+            priority
+          />
+        </div>
+      )}
       <h1>{articolo.titolo}</h1>
       {articolo.autore && (
         <p className="articolo-autore">di {articolo.autore.nome}</p>
