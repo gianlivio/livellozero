@@ -95,7 +95,9 @@ export default async function PaginaArticolo(
         {nomeCategoria(articolo.categoria)}
       </Link>
       <h1>{articolo.titolo}</h1>
-      <p className="articolo-autore">di Cristian Mazzini</p>
+      {articolo.autore && (
+        <p className="articolo-autore">di {articolo.autore.nome}</p>
+      )}
       <p className="articolo-meta">
         {dataLeggibile(articolo.data)} — Lettura da {articolo.minuti} minuti
       </p>
@@ -104,6 +106,44 @@ export default async function PaginaArticolo(
         data={articolo.corpo}
         converters={convertitori}
       />
+
+      {articolo.autore && (
+        <aside className="articolo-firma">
+          {articolo.autore.foto ? (
+            <div className="articolo-firma-foto">
+              <Image
+                src={articolo.autore.foto.url}
+                alt={articolo.autore.foto.alt}
+                fill
+                sizes="120px"
+                style={{ objectFit: "cover" }}
+              />
+            </div>
+          ) : (
+            <div className="blocco articolo-firma-foto" data-eti="foto" />
+          )}
+          <div>
+            <h2>{articolo.autore.nome}</h2>
+            {articolo.autore.bio && <p>{articolo.autore.bio}</p>}
+            {(articolo.autore.instagram || articolo.autore.email) && (
+              <div className="articolo-firma-contatti">
+                {articolo.autore.instagram && (
+                  <a
+                    href={`https://instagram.com/${articolo.autore.instagram}`}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    Instagram
+                  </a>
+                )}
+                {articolo.autore.email && (
+                  <a href={`mailto:${articolo.autore.email}`}>Email</a>
+                )}
+              </div>
+            )}
+          </div>
+        </aside>
+      )}
 
       {altri.length > 0 && (
         <div className="articolo-continua">

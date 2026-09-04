@@ -10,10 +10,17 @@ import sharp from "sharp";
 import { Utenti } from "./collections/Utenti";
 import { Media } from "./collections/Media";
 import { Articoli } from "./collections/Articoli";
+import { Autori } from "./collections/Autori";
 import { migrations } from "./migrations";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
+
+const indirizzoSito =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "http://localhost:3000");
 
 export default buildConfig({
   admin: {
@@ -24,8 +31,25 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    livePreview: {
+      collections: ["articoli"],
+      breakpoints: [
+        { name: "desktop", label: "Computer", width: 1440, height: 900 },
+        { name: "tablet", label: "Tablet", width: 768, height: 1024 },
+        { name: "mobile", label: "Telefono", width: 390, height: 844 },
+      ],
+      url: ({ data }) => {
+        const parametri = new URLSearchParams({
+          slug: String(data?.slug ?? ""),
+          collection: "articoli",
+          path: `/articoli/${data?.slug ?? ""}`,
+          previewSecret: process.env.PREVIEW_SECRET || "",
+        });
+        return `${indirizzoSito}/next/preview?${parametri.toString()}`;
+      },
+    },
   },
-  collections: [Utenti, Media, Articoli],
+  collections: [Utenti, Media, Autori, Articoli],
   editor: lexicalEditor(),
   i18n: {
     supportedLanguages: { it },

@@ -1,5 +1,6 @@
 import * as migration_20260902_131937_iniziale from './20260902_131937_iniziale';
 import * as migration_20260902_153945_editor_immagini from './20260902_153945_editor_immagini';
+import * as migration_20260904_101958_autori_e_anteprima from './20260904_101958_autori_e_anteprima';
 
 export const migrations = [
   {
@@ -10,6 +11,11 @@ export const migrations = [
   {
     up: migration_20260902_153945_editor_immagini.up,
     down: migration_20260902_153945_editor_immagini.down,
-    name: '20260902_153945_editor_immagini'
+    name: '20260902_153945_editor_immagini',
+  },
+  {
+    up: migration_20260904_101958_autori_e_anteprima.up,
+    down: migration_20260904_101958_autori_e_anteprima.down,
+    name: '20260904_101958_autori_e_anteprima'
   },
 ];

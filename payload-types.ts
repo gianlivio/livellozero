@@ -69,6 +69,7 @@ export interface Config {
   collections: {
     utenti: Utenti;
     media: Media;
+    autori: Autori;
     articoli: Articoli;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -79,6 +80,7 @@ export interface Config {
   collectionsSelect: {
     utenti: UtentiSelect<false> | UtentiSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    autori: AutoriSelect<false> | AutoriSelect<true>;
     articoli: ArticoliSelect<false> | ArticoliSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -152,6 +154,10 @@ export interface Utenti {
 export interface Media {
   id: number;
   /**
+   * Serve a ritrovare l'immagine nell'archivio.
+   */
+  titolo?: string | null;
+  /**
    * Descrivi l'immagine per chi non può vederla. Serve anche a Google.
    */
   alt: string;
@@ -187,6 +193,26 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "autori".
+ */
+export interface Autori {
+  id: number;
+  nome: string;
+  /**
+   * Due righe che compaiono in fondo agli articoli.
+   */
+  bio?: string | null;
+  foto?: (number | null) | Media;
+  /**
+   * Solo il nome utente, senza @
+   */
+  instagram?: string | null;
+  email?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "articoli".
  */
 export interface Articoli {
@@ -197,6 +223,7 @@ export interface Articoli {
    */
   slug: string;
   categoria: 'approfondimenti' | 'recensioni' | 'consigli' | 'riflessioni' | 'classifiche';
+  autore: number | Autori;
   /**
    * Due righe che compaiono in home e su Google.
    */
@@ -257,6 +284,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'autori';
+        value: number | Autori;
       } | null)
     | ({
         relationTo: 'articoli';
@@ -332,6 +363,7 @@ export interface UtentiSelect<T extends boolean = true> {
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
+  titolo?: T;
   alt?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -371,12 +403,26 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "autori_select".
+ */
+export interface AutoriSelect<T extends boolean = true> {
+  nome?: T;
+  bio?: T;
+  foto?: T;
+  instagram?: T;
+  email?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "articoli_select".
  */
 export interface ArticoliSelect<T extends boolean = true> {
   titolo?: T;
   slug?: T;
   categoria?: T;
+  autore?: T;
   sommario?: T;
   copertina?: T;
   corpo?: T;

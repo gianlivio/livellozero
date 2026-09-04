@@ -9,6 +9,7 @@
     "lint": "eslint",
     "migrazione:crea": "tsx scripts/migrazione.mts",
     "migrazione:applica": "tsx scripts/migrazione-applica.mts",
+    "tipi:genera": "tsx scripts/tipi.mts",
     "postinstall": "patch-package"
   },
   "dependencies": {

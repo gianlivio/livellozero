@@ -124,6 +124,16 @@ export const Articoli: CollectionConfig = {
       ],
     },
     {
+      name: 'autore',
+      type: 'relationship',
+      relationTo: 'autori',
+      required: true,
+      label: 'Autore',
+      admin: {
+        position: 'sidebar',
+      },
+    },
+    {
       name: 'sommario',
       type: 'textarea',
       required: true,

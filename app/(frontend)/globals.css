@@ -490,6 +490,49 @@ a {
   text-align: left;
 }
 
+.articolo-firma {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 24px;
+  align-items: start;
+  margin-top: 56px;
+  padding-top: 32px;
+  border-top: 1px solid var(--linea);
+}
+
+.articolo-firma-foto {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+}
+
+.articolo-firma h2 {
+  font-family: var(--font-archivo), sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  letter-spacing: -0.015em;
+  margin-bottom: 10px;
+}
+
+.articolo-firma p {
+  color: var(--tenue);
+  max-width: 62ch;
+  margin-bottom: 14px;
+}
+
+.articolo-firma-contatti {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.articolo-firma-contatti a {
+  text-decoration: none;
+  color: var(--testo);
+  border-bottom: 1px solid var(--accento);
+  padding-bottom: 2px;
+}
+
 .articolo-continua {
   margin-top: 64px;
   padding-top: 40px;
@@ -652,6 +695,10 @@ a {
   }
 
   .pagina-chi-sono {
+    grid-template-columns: 1fr;
+  }
+
+  .articolo-firma {
     grid-template-columns: 1fr;
   }
 

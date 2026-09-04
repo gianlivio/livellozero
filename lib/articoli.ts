@@ -1,6 +1,11 @@
+import { draftMode } from "next/headers";
 import { getPayload } from "payload";
 import config from "@/payload.config";
-import type { Articoli as ArticoloDoc, Media as MediaDoc } from "@/payload-types";
+import type {
+  Articoli as ArticoloDoc,
+  Autori as AutoreDoc,
+  Media as MediaDoc,
+} from "@/payload-types";
 
 export type Categoria =
   | "approfondimenti"
@@ -16,6 +21,14 @@ export type Immagine = {
   altezza?: number | null;
 };
 
+export type Autore = {
+  nome: string;
+  bio: string | null;
+  foto: Immagine | null;
+  instagram: string | null;
+  email: string | null;
+};
+
 export type Articolo = {
   slug: string;
   titolo: string;
@@ -25,6 +38,7 @@ export type Articolo = {
   minuti: number;
   corpo: ArticoloDoc["corpo"];
   copertina: Immagine | null;
+  autore: Autore | null;
 };
 
 export const CATEGORIE: {
@@ -67,7 +81,9 @@ async function ottieniPayload() {
   return getPayload({ config: resolvedConfig });
 }
 
-function mappaImmagine(copertina: ArticoloDoc["copertina"]): Immagine | null {
+function mappaImmagine(
+  copertina: number | MediaDoc | null | undefined
+): Immagine | null {
   if (!copertina || typeof copertina !== "object") return null;
   const media = copertina as MediaDoc;
   if (!media.url) return null;
@@ -76,6 +92,18 @@ function mappaImmagine(copertina: ArticoloDoc["copertina"]): Immagine | null {
     alt: media.alt ?? "",
     larghezza: media.width,
     altezza: media.height,
+  };
+}
+
+function mappaAutore(autore: ArticoloDoc["autore"]): Autore | null {
+  if (!autore || typeof autore !== "object") return null;
+  const doc = autore as AutoreDoc;
+  return {
+    nome: doc.nome,
+    bio: doc.bio ?? null,
+    foto: mappaImmagine(doc.foto),
+    instagram: doc.instagram ?? null,
+    email: doc.email ?? null,
   };
 }
 
@@ -89,6 +117,7 @@ function mappaArticolo(doc: ArticoloDoc): Articolo {
     minuti: doc.minuti ?? 0,
     corpo: doc.corpo,
     copertina: mappaImmagine(doc.copertina),
+    autore: mappaAutore(doc.autore),
   };
 }
 
@@ -129,11 +158,19 @@ export async function articoloPerSlug(
   slug: string
 ): Promise<Articolo | undefined> {
   const payload = await ottieniPayload();
+  const { isEnabled: anteprima } = await draftMode();
+
   const risultato = await payload.find({
     collection: "articoli",
-    where: {
-      and: [{ _status: { equals: "published" } }, { slug: { equals: slug } }],
-    },
+    where: anteprima
+      ? { slug: { equals: slug } }
+      : {
+          and: [
+            { _status: { equals: "published" } },
+            { slug: { equals: slug } },
+          ],
+        },
+    draft: anteprima,
     depth: 2,
     limit: 1,
   });
