@@ -26,6 +26,9 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://livellozero.vercel.app"
+  ),
   title: "Livello Zero — come nascono i videogiochi",
   description:
     "Approfondimenti, recensioni e consigli sui videogiochi, con attenzione a come vengono progettati e realizzati.",
@@ -52,10 +55,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: scriptTema }} />
       </head>
       <body>
-        <div className="nastro">
-          Bozza grafica — i testi sono di esempio, le immagini vanno al posto
-          dei riquadri
-        </div>
         <header className="testata">
           <div className="guscio testata-interna">
             <Link href="/" className="marchio">
