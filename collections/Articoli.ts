@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache'
 import {
   BlockquoteFeature,
   BoldFeature,
+  FixedToolbarFeature,
   HeadingFeature,
   InlineToolbarFeature,
   ItalicFeature,
@@ -177,6 +178,7 @@ export const Articoli: CollectionConfig = {
             },
           }),
           InlineToolbarFeature(),
+          FixedToolbarFeature(),
         ],
       }),
     },

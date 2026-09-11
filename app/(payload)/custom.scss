@@ -1,0 +1,21 @@
+// Gerarchia visibile dei titoli dentro l'editor lexical del pannello.
+// Le classi arrivano dal tema di @payloadcms/richtext-lexical
+// (LexicalEditorTheme in dist/lexical/theme/EditorTheme.js); l'area di
+// scrittura e' .ContentEditable__root, usata qui come contenitore per avere
+// la precedenza sugli stili del pacchetto senza toccare le toolbar.
+
+.ContentEditable__root {
+  .LexicalEditorTheme__h2 {
+    font-size: 1.6em;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-top: 1.2em;
+  }
+
+  .LexicalEditorTheme__h3 {
+    font-size: 1.25em;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-top: 1em;
+  }
+}
