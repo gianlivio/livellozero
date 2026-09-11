@@ -125,7 +125,7 @@ export default async function PaginaArticolo(
           {articolo.autore.foto ? (
             <div className="articolo-firma-foto">
               <Image
-                src={articolo.autore.foto.url}
+                src={articolo.autore.foto.ritratto ?? articolo.autore.foto.url}
                 alt={articolo.autore.foto.alt}
                 fill
                 sizes="120px"

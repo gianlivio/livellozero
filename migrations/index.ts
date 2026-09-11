@@ -1,6 +1,7 @@
 import * as migration_20260902_131937_iniziale from './20260902_131937_iniziale';
 import * as migration_20260902_153945_editor_immagini from './20260902_153945_editor_immagini';
 import * as migration_20260904_101958_autori_e_anteprima from './20260904_101958_autori_e_anteprima';
+import * as migration_20260911_125754_formato_ritratto from './20260911_125754_formato_ritratto';
 
 export const migrations = [
   {
@@ -16,6 +17,11 @@ export const migrations = [
   {
     up: migration_20260904_101958_autori_e_anteprima.up,
     down: migration_20260904_101958_autori_e_anteprima.down,
-    name: '20260904_101958_autori_e_anteprima'
+    name: '20260904_101958_autori_e_anteprima',
+  },
+  {
+    up: migration_20260911_125754_formato_ritratto.up,
+    down: migration_20260911_125754_formato_ritratto.down,
+    name: '20260911_125754_formato_ritratto'
   },
 ];

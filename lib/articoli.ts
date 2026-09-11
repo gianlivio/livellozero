@@ -19,6 +19,8 @@ export type Immagine = {
   alt: string;
   larghezza?: number | null;
   altezza?: number | null;
+  /** Ritaglio quadrato 400x400. Manca sulle immagini caricate prima del formato. */
+  ritratto?: string | null;
 };
 
 export type Autore = {
@@ -92,6 +94,7 @@ function mappaImmagine(
     alt: media.alt ?? "",
     larghezza: media.width,
     altezza: media.height,
+    ritratto: media.sizes?.ritratto?.url,
   };
 }
 
