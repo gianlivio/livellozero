@@ -4,12 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "tsx scripts/importmap.mts && next build",
     "start": "next start",
     "lint": "eslint",
     "migrazione:crea": "tsx scripts/migrazione.mts",
     "migrazione:applica": "tsx scripts/migrazione-applica.mts",
     "tipi:genera": "tsx scripts/tipi.mts",
+    "importmap:genera": "tsx scripts/importmap.mts",
     "postinstall": "patch-package"
   },
   "dependencies": {
