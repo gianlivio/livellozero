@@ -407,12 +407,16 @@ a {
   margin-bottom: 28px;
 }
 
-/* Nessun ritaglio: la copertina tiene le sue proporzioni, e se e' molto
-   verticale si ferma a 70vh invece di occupare tutto lo schermo. */
+/* La copertina prende sempre tutta la larghezza della colonna. Fino a 640px di
+   altezza tiene le sue proporzioni e si vede intera; oltre, invece di
+   rimpicciolirsi lasciando spazio vuoto ai lati, si ritaglia sul centro.
+   640 e' scelto perche' copre la colonna piena (638px a 1440): cosi' anche una
+   copertina quadrata resta intera. */
 .articolo-immagine img {
   display: block;
-  max-height: 70vh;
-  object-fit: contain;
+  max-height: 640px;
+  object-fit: cover;
+  object-position: center;
 }
 
 .pagina-articolo h1 {
