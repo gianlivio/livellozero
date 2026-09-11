@@ -129,7 +129,7 @@ export default async function PaginaArticolo(
                 alt={articolo.autore.foto.alt}
                 fill
                 sizes="120px"
-                style={{ objectFit: "cover" }}
+                style={{ objectFit: "cover", objectPosition: "top" }}
               />
             </div>
           ) : (
