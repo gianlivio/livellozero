@@ -99,10 +99,11 @@ export default async function PaginaArticolo(
           <Image
             src={articolo.copertina.url}
             alt={articolo.copertina.alt}
-            fill
+            width={articolo.copertina.larghezza ?? 1600}
+            height={articolo.copertina.altezza ?? 900}
             sizes="(max-width: 720px) 100vw, 720px"
-            style={{ objectFit: "cover" }}
-            priority
+            style={{ width: "100%", height: "auto" }}
+            preload
           />
         </div>
       )}
