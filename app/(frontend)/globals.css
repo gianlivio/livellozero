@@ -407,12 +407,11 @@ body:has(.pagina-articolo) {
   background-size: 34px 34px;
 }
 
-/* Il fondo pieno della colonna copre il reticolo sotto il testo. Il padding
-   cresce da 28 a 40px per staccare il testo dal bordo del fondo; max-width lo
-   compensa, cosi' la misura di lettura resta quella di prima. */
+/* Il fondo pieno della colonna copre il reticolo sotto il testo; i 40px di
+   padding staccano il testo dal bordo del fondo. */
 .pagina-articolo {
   position: relative;
-  max-width: calc(68ch + 24px);
+  max-width: 76ch;
   margin: 0 auto;
   background: var(--fondo);
   padding: 56px 40px;
@@ -423,22 +422,46 @@ body:has(.pagina-articolo) {
   margin-bottom: 14px;
 }
 
-/* L'indice sta nel margine sinistro, fuori dalla colonna: il testo resta
-   centrato com'era. Il contenitore e' alto quanto l'articolo e l'elenco ci
-   scorre dentro appiccicato. Compare solo quando quel margine e' abbastanza
-   largo da ospitarlo: sotto i 1100px non c'e' spazio. */
-.articolo-indice {
+/* Indice a sinistra e condivisione a destra stanno nei margini, fuori dalla
+   colonna: il testo resta centrato com'era. Ogni contenitore e' alto quanto
+   l'articolo e quel che c'e' dentro ci scorre appiccicato. Sotto i 1250px il
+   margine si stringe al punto che l'indice diventa illeggibile, con i titoli a
+   capo tre o quattro volte: spariscono (la condivisione ricompare in fondo). */
+.articolo-indice,
+.condivisione-lato {
   display: none;
 }
 
-@media (min-width: 1100px) {
-  .articolo-indice {
+@media (min-width: 1250px) {
+  /* La larghezza e' quel che avanza fra la colonna e il bordo della finestra,
+     meno il distacco dal testo e un margine perche' alla soglia non finiscano
+     appiccicate al bordo della finestra. Il 100% e' la colonna stessa (e' il
+     blocco contenitore), quindi il conto regge qualunque cosa misuri un "ch";
+     i 24px sono la barra di scorrimento, che 100vw conta e le media query no. */
+  .articolo-indice,
+  .condivisione-lato {
+    --distacco: 28px;
+    --margine: 16px;
     display: block;
     position: absolute;
     top: 56px;
     bottom: 0;
-    right: calc(100% + 28px);
-    width: min(200px, calc((100vw - 780px) / 2 - 28px));
+    width: min(
+      200px,
+      calc((100vw - 100% - 24px) / 2 - var(--distacco) - var(--margine))
+    );
+  }
+
+  .articolo-indice {
+    right: calc(100% + var(--distacco));
+  }
+
+  .condivisione-lato {
+    left: calc(100% + var(--distacco));
+  }
+
+  .condivisione-fondo {
+    display: none;
   }
 }
 
@@ -465,6 +488,68 @@ body:has(.pagina-articolo) {
 .articolo-indice a:hover,
 .articolo-indice a[aria-current="true"] {
   color: var(--accento);
+}
+
+.condivisione-lato .condivisione-interna {
+  position: sticky;
+  top: 96px;
+  border-left: 1px solid var(--linea);
+  padding-left: 14px;
+}
+
+.condivisione-etichetta {
+  font-family: var(--font-archivo), sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tenue);
+  margin-bottom: 14px;
+}
+
+.condivisione-pulsanti {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+/* Link e pulsante devono essere indistinguibili: il secondo parte da zero. */
+.condivisione-voce {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-archivo), sans-serif;
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--tenue);
+  text-decoration: none;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.condivisione-voce:hover {
+  color: var(--accento);
+}
+
+.condivisione-voce svg {
+  flex-shrink: 0;
+}
+
+/* In chiusura d'articolo: stessa roba, ma in riga. */
+.condivisione-fondo {
+  margin-top: 48px;
+  padding-top: 26px;
+  border-top: 1px solid var(--linea);
+}
+
+.condivisione-fondo .condivisione-pulsanti {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 14px 24px;
 }
 
 .articolo-immagine {
@@ -506,8 +591,8 @@ body:has(.pagina-articolo) {
 }
 
 .articolo-corpo p {
-  font-size: 19px;
-  line-height: 1.75;
+  font-size: 20px;
+  line-height: 1.7;
   margin-bottom: 1.4em;
 }
 
@@ -518,7 +603,7 @@ body:has(.pagina-articolo) {
 .articolo-corpo h2 {
   font-family: var(--font-archivo), sans-serif;
   font-weight: 600;
-  font-size: 28px;
+  font-size: 29px;
   letter-spacing: -0.015em;
   margin-top: 2.2em;
   margin-bottom: 0.6em;
@@ -528,7 +613,7 @@ body:has(.pagina-articolo) {
 .articolo-corpo h3 {
   font-family: var(--font-archivo), sans-serif;
   font-weight: 600;
-  font-size: 21px;
+  font-size: 22px;
   margin-top: 1.8em;
   margin-bottom: 0.5em;
 }
@@ -785,9 +870,27 @@ body:has(.pagina-articolo) {
     grid-template-columns: 1fr;
   }
 
+  /* Qui la colonna larga non serve: sotto i 760px si ferma dove si fermava
+     prima, cioe' appena sopra i 700px, e piu' giu' riempie lo schermo. */
   .pagina-articolo {
+    max-width: calc(68ch + 24px);
     padding-left: 24px;
     padding-right: 24px;
+  }
+
+  /* Su schermo stretto il testo resta com'era: il corpo piu' grande serve a
+     reggere la colonna larga, che qui non c'e'. */
+  .articolo-corpo p {
+    font-size: 19px;
+    line-height: 1.75;
+  }
+
+  .articolo-corpo h2 {
+    font-size: 28px;
+  }
+
+  .articolo-corpo h3 {
+    font-size: 21px;
   }
 
   .piede {

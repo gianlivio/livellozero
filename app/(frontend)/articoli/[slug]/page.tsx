@@ -13,6 +13,8 @@ import {
   tuttiGliArticoli,
 } from "@/lib/articoli";
 import { ancoraTitolo, titoliArticolo } from "@/lib/indice";
+import { urlArticolo } from "@/lib/sito";
+import Condivisione from "./Condivisione";
 import IndiceArticolo from "./IndiceArticolo";
 
 const convertitori: JSXConvertersFunction = ({ defaultConverters }) => ({
@@ -101,11 +103,13 @@ export default async function PaginaArticolo(
   const tutti = await tuttiGliArticoli();
   const altri = tutti.filter((a) => a.slug !== articolo.slug).slice(0, 2);
   const voci = titoliArticolo(articolo.corpo);
+  const url = urlArticolo(articolo.slug);
 
   return (
     <article className="pagina-articolo">
       {/* Sotto le tre sezioni l'indice non aiuta: si abbraccia gia' a occhio. */}
       {voci.length >= 3 && <IndiceArticolo voci={voci} />}
+      <Condivisione url={url} titolo={articolo.titolo} variante="lato" />
       <Link href={`/${articolo.categoria}`} className="categoria">
         {nomeCategoria(articolo.categoria)}
       </Link>
@@ -134,6 +138,10 @@ export default async function PaginaArticolo(
         data={articolo.corpo}
         converters={convertitori}
       />
+
+      {/* Sotto i 1250px la colonna a lato sparisce e la condivisione ricompare
+          qui, in orizzontale, in chiusura di lettura. */}
+      <Condivisione url={url} titolo={articolo.titolo} variante="fondo" />
 
       {articolo.autore && (
         <aside className="articolo-firma">

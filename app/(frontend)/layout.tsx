@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Archivo, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import Link from "next/link";
+import { baseSito } from "@/lib/sito";
 import InterruttoreTema from "./InterruttoreTema";
 import "./globals.css";
 
@@ -26,9 +27,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "https://livellozero.vercel.app"
-  ),
+  metadataBase: baseSito,
   title: "Livello Zero — come nascono i videogiochi",
   description:
     "Approfondimenti, recensioni e consigli sui videogiochi, con attenzione a come vengono progettati e realizzati.",
