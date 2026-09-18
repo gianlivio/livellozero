@@ -1,13 +1,19 @@
 import Image from "next/image";
 import Link from "next/link";
-import { dataLeggibile, nomeCategoria, tuttiGliArticoli } from "@/lib/articoli";
+import { elencoArticoli, nomeCategoria, paginaRichiesta } from "@/lib/articoli";
+import Paginazione from "./Paginazione";
+import Pezzo from "./Pezzo";
 
 export const revalidate = 3600;
 
-export default async function Home() {
-  const articoli = await tuttiGliArticoli();
-  const apertura = articoli[0];
-  const elenco = articoli.slice(1, 6);
+export default async function Home(props: PageProps<"/">) {
+  const parametri = await props.searchParams;
+  const elenco = await elencoArticoli(paginaRichiesta(parametri.pagina));
+
+  // L'apertura e' il primo articolo della prima pagina, e conta nei dieci:
+  // dalla seconda in poi non c'e' niente in evidenza e l'elenco li prende tutti.
+  const apertura = elenco.pagina === 1 ? elenco.articoli[0] : undefined;
+  const pezzi = apertura ? elenco.articoli.slice(1) : elenco.articoli;
 
   return (
     <>
@@ -45,51 +51,32 @@ export default async function Home() {
             />
           )}
         </section>
-      ) : (
+      ) : elenco.pagina === 1 ? (
         <section className="guscio sezione-in-arrivo">
           <div className="blocco" data-eti="in arrivo" />
           <h1>Il sito sta per partire</h1>
           <p className="vuoto">I primi articoli arrivano a breve.</p>
         </section>
-      )}
+      ) : null}
 
-      {elenco.length > 0 && (
+      {/* L'impaginazione sta fuori dall'elenco, non dentro: se una pagina
+          avesse la sola apertura e nessun pezzo sotto, chiudere tutto dentro
+          l'elenco toglierebbe anche il modo di arrivare alla pagina dopo. */}
+      {(pezzi.length > 0 || elenco.pagineTotali > 1) && (
         <section className="guscio sezione-articoli">
-          <h2>Ultimi articoli</h2>
-          <div className="elenco-pezzi">
-            {elenco.map((articolo) => (
-              <article className="pezzo" key={articolo.slug}>
-                {articolo.copertina ? (
-                  <div className="pezzo-immagine">
-                    <Image
-                      src={articolo.copertina.url}
-                      alt={articolo.copertina.alt}
-                      fill
-                      sizes="168px"
-                      style={{ objectFit: "cover" }}
-                    />
-                  </div>
-                ) : (
-                  <div
-                    className="blocco pezzo-immagine"
-                    data-eti="immagine articolo"
-                  />
-                )}
-                <div className="pezzo-testo">
-                  <Link href={`/${articolo.categoria}`} className="categoria">
-                    {nomeCategoria(articolo.categoria)}
-                  </Link>
-                  <h3>
-                    <Link href={`/articoli/${articolo.slug}`}>
-                      {articolo.titolo}
-                    </Link>
-                  </h3>
-                  <p className="sommario">{articolo.sommario}</p>
-                  <p className="data">{dataLeggibile(articolo.data)}</p>
-                </div>
-              </article>
-            ))}
-          </div>
+          {pezzi.length > 0 && (
+            <>
+              <h2>
+                {elenco.pagina === 1 ? "Ultimi articoli" : "Altri articoli"}
+              </h2>
+              <div className="elenco-pezzi">
+                {pezzi.map((articolo) => (
+                  <Pezzo articolo={articolo} key={articolo.slug} />
+                ))}
+              </div>
+            </>
+          )}
+          <Paginazione elenco={elenco} base="/" />
         </section>
       )}
 

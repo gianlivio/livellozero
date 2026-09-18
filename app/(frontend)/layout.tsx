@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Archivo, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import Link from "next/link";
 import { baseSito } from "@/lib/sito";
+import CampoRicerca from "./CampoRicerca";
+import Marchio from "./Marchio";
 import InterruttoreTema from "./InterruttoreTema";
 import "./globals.css";
 
@@ -57,9 +59,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <header className="testata">
           <div className="guscio testata-interna">
             <Link href="/" className="marchio">
-              <span className="marchio-quadrato">
-                <span className="marchio-zero">0</span>
-              </span>
+              <Marchio />
               <span className="marchio-nome">LIVELLO ZERO</span>
             </Link>
             <nav className="navigazione">
@@ -70,6 +70,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <Link href="/classifiche">Classifiche</Link>
               <Link href="/chi-sono">Chi sono</Link>
             </nav>
+            <CampoRicerca />
             <InterruttoreTema />
           </div>
         </header>

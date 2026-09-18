@@ -1,12 +1,8 @@
 import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  articoliPerCategoria,
-  CATEGORIE,
-  dataLeggibile,
-} from "@/lib/articoli";
+import { articoliPerCategoria, CATEGORIE, paginaRichiesta } from "@/lib/articoli";
+import Paginazione from "../Paginazione";
+import Pezzo from "../Pezzo";
 
 export const revalidate = 3600;
 
@@ -33,50 +29,28 @@ export default async function PaginaCategoria(
   const info = CATEGORIE.find((c) => c.chiave === categoria);
   if (!info) notFound();
 
-  const articoli = await articoliPerCategoria(info.chiave);
+  const parametri = await props.searchParams;
+  const elenco = await articoliPerCategoria(
+    info.chiave,
+    paginaRichiesta(parametri.pagina)
+  );
 
   return (
     <section className="guscio pagina-categoria">
       <h1>{info.nome}</h1>
       <p className="descrizione">{info.descrizione}</p>
 
-      {articoli.length === 0 ? (
+      {elenco.articoli.length === 0 ? (
         <p className="vuoto">Ancora nessun articolo in questa sezione.</p>
       ) : (
-        <div className="elenco-pezzi">
-          {articoli.map((articolo) => (
-            <article className="pezzo" key={articolo.slug}>
-              {articolo.copertina ? (
-                <div className="pezzo-immagine">
-                  <Image
-                    src={articolo.copertina.url}
-                    alt={articolo.copertina.alt}
-                    fill
-                    sizes="168px"
-                    style={{ objectFit: "cover" }}
-                  />
-                </div>
-              ) : (
-                <div
-                  className="blocco pezzo-immagine"
-                  data-eti="immagine articolo"
-                />
-              )}
-              <div className="pezzo-testo">
-                <Link href={`/${articolo.categoria}`} className="categoria">
-                  {info.nome}
-                </Link>
-                <h3>
-                  <Link href={`/articoli/${articolo.slug}`}>
-                    {articolo.titolo}
-                  </Link>
-                </h3>
-                <p className="sommario">{articolo.sommario}</p>
-                <p className="data">{dataLeggibile(articolo.data)}</p>
-              </div>
-            </article>
-          ))}
-        </div>
+        <>
+          <div className="elenco-pezzi">
+            {elenco.articoli.map((articolo) => (
+              <Pezzo articolo={articolo} key={articolo.slug} />
+            ))}
+          </div>
+          <Paginazione elenco={elenco} base={`/${info.chiave}`} />
+        </>
       )}
     </section>
   );

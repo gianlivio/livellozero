@@ -121,23 +121,11 @@ a {
   flex-shrink: 0;
 }
 
-.marchio-quadrato {
-  width: 26px;
-  height: 26px;
+/* Il marchio prende da qui il colore (currentColor) e dalle variabili i vuoti:
+   cambiando tema cambia da solo, senza una seconda copia del disegno. */
+.marchio-segno {
+  display: block;
   flex-shrink: 0;
-  border: 2px solid var(--accento);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform: skewX(-12deg);
-}
-
-.marchio-zero {
-  display: inline-block;
-  transform: skewX(12deg);
-  font-family: var(--font-archivo), sans-serif;
-  font-weight: 800;
-  font-size: 14px;
   color: var(--accento);
 }
 
@@ -185,6 +173,104 @@ a {
   align-items: center;
   justify-content: center;
   transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+/* La lente sta sempre nella testata, il campo si apre alla sua sinistra. Da
+   chiuso il margine negativo si rimangia il gap della testata: senza, fra la
+   navigazione e la lente resterebbe un buco largo quanto un campo che non c'e'. */
+.ricerca {
+  display: flex;
+  align-items: center;
+  width: 0;
+  margin-right: -24px;
+  overflow: hidden;
+  transition: width 0.2s ease, margin-right 0.2s ease;
+}
+
+.ricerca[data-aperto="true"] {
+  width: 210px;
+  margin-right: 0;
+}
+
+.ricerca input {
+  width: 100%;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--linea);
+  background: transparent;
+  color: var(--testo);
+  font-family: inherit;
+  font-size: 15px;
+  /* Chiuso il campo non e' solo invisibile: esce dal giro dei tab e da quello
+     dei lettori di schermo, che altrimenti lo annuncerebbero a vuoto. */
+  visibility: hidden;
+}
+
+.ricerca[data-aperto="true"] input {
+  visibility: visible;
+}
+
+.ricerca input::placeholder {
+  color: var(--tenue);
+}
+
+/* La crocetta tonda che Safari e Chrome infilano nei campi search: qui stona,
+   nella testata non c'e' nient'altro di tondo. */
+.ricerca input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* In pagina il campo non si apre e non si chiude: sta li' della sua larghezza,
+   senza il margine negativo che nella testata serve a chiudere il buco. */
+.ricerca[data-variante="pagina"] {
+  width: auto;
+  flex: 1;
+  max-width: 340px;
+  margin-right: 0;
+  overflow: visible;
+}
+
+.ricerca[data-variante="pagina"] input {
+  visibility: visible;
+}
+
+.ricerca-lente {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border: 1px solid var(--linea);
+  background: transparent;
+  color: var(--testo);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.ricerca-lente:hover,
+.ricerca-lente[aria-expanded="true"] {
+  border-color: var(--accento);
+  color: var(--accento);
+}
+
+/* Quanto manca alla fine dell'articolo. Sta sotto la testata appiccicata: il
+   componente le misura l'altezza e le siede sotto, perche' da stretto la
+   testata cresce di una riga. Parte schiacciata a sinistra e cresce da li'.
+   La transizione la spegne la regola prefers-reduced-motion in cima al file:
+   la barra resta, e' solo il suo rincorrere lo scorrimento che sparisce. */
+.barra-lettura {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 49;
+  width: 100%;
+  height: 3px;
+  background: var(--accento);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.1s linear;
 }
 
 .apertura {
@@ -373,11 +459,15 @@ a {
   color: var(--tenue);
 }
 
-.pagina-categoria {
+/* Ricerca e categoria sono la stessa pagina con un titolo diverso: un elenco
+   di pezzi sotto due righe di intestazione. */
+.pagina-categoria,
+.pagina-ricerca {
   padding: 56px 28px;
 }
 
-.pagina-categoria h1 {
+.pagina-categoria h1,
+.pagina-ricerca h1 {
   font-family: var(--font-archivo), sans-serif;
   font-weight: 700;
   font-size: clamp(30px, 4.5vw, 42px);
@@ -385,13 +475,15 @@ a {
   margin-bottom: 12px;
 }
 
-.pagina-categoria .descrizione {
+.pagina-categoria .descrizione,
+.pagina-ricerca .descrizione {
   color: var(--tenue);
   max-width: 60ch;
   margin-bottom: 40px;
 }
 
-.pagina-categoria .vuoto {
+.pagina-categoria .vuoto,
+.pagina-ricerca .vuoto {
   color: var(--tenue);
 }
 
@@ -811,11 +903,6 @@ body:has(.pagina-articolo) {
   padding: 56px 28px;
 }
 
-.pagina-404-immagine {
-  height: clamp(180px, 30vw, 320px);
-  margin-bottom: 32px;
-}
-
 .pagina-404 h1 {
   font-family: var(--font-archivo), sans-serif;
   font-weight: 700;
@@ -824,16 +911,79 @@ body:has(.pagina-articolo) {
   margin-bottom: 14px;
 }
 
-.pagina-404 p {
+.pagina-404-riga {
   color: var(--tenue);
-  margin-bottom: 22px;
+  margin-bottom: 36px;
 }
 
-.pagina-404 a {
+/* Le cinque categorie a riquadri: si riempiono per quanto ci sta in riga e
+   vanno a capo da sole, senza un numero di colonne deciso a mano. */
+.pagina-404-categorie {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px;
+  margin-bottom: 36px;
+}
+
+.pagina-404-categorie a {
+  font-family: var(--font-archivo), sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  text-decoration: none;
+  color: var(--testo);
+  border: 1px solid var(--linea);
+  padding: 18px;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.pagina-404-categorie a:hover {
+  border-color: var(--accento);
+  color: var(--accento);
+}
+
+.pagina-404-ricerca {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* L'ultimo .pezzo non ha bordo sotto: il filo qui sopra chiude l'elenco al
+   posto suo. Il capo della lista resta al suo posto ma spento, cosi' le tre
+   colonne non ballano passando da una pagina all'altra. */
+.paginazione {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+  padding-top: 26px;
+  border-top: 1px solid var(--linea);
+  font-family: var(--font-archivo), sans-serif;
+  font-size: 14px;
+}
+
+.paginazione-stato {
+  color: var(--tenue);
+  text-align: center;
+}
+
+.paginazione-salto {
   text-decoration: none;
   color: var(--testo);
   border-bottom: 1px solid var(--accento);
   padding-bottom: 2px;
+}
+
+.paginazione-salto:first-child {
+  justify-self: start;
+}
+
+.paginazione-salto:last-child {
+  justify-self: end;
+}
+
+.paginazione-salto[aria-disabled="true"] {
+  color: var(--tenue);
+  border-bottom-color: transparent;
 }
 
 @media (max-width: 760px) {
@@ -896,5 +1046,17 @@ body:has(.pagina-articolo) {
   .piede {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  /* Aperta, la ricerca scende sotto la navigazione e si prende tutta la riga:
+     accanto alla lente non resterebbe larghezza per scriverci dentro. La
+     navigazione ha order 3, quindi il campo la segue. Vale solo in testata:
+     in pagina il campo non ha una navigazione da scavalcare, e quell'order
+     lo manderebbe a finire dopo la sua stessa lente. */
+  .ricerca[data-variante="testata"][data-aperto="true"] {
+    order: 4;
+    flex-basis: 100%;
+    width: 100%;
+    margin-right: 0;
   }
 }

@@ -7,6 +7,7 @@ import {
   type JSXConvertersFunction,
 } from "@payloadcms/richtext-lexical/react";
 import {
+  articoliCorrelati,
   articoloPerSlug,
   dataLeggibile,
   nomeCategoria,
@@ -14,6 +15,8 @@ import {
 } from "@/lib/articoli";
 import { ancoraTitolo, titoliArticolo } from "@/lib/indice";
 import { urlArticolo } from "@/lib/sito";
+import Pezzo from "../../Pezzo";
+import BarraLettura from "./BarraLettura";
 import Condivisione from "./Condivisione";
 import IndiceArticolo from "./IndiceArticolo";
 
@@ -100,13 +103,13 @@ export default async function PaginaArticolo(
   const articolo = await articoloPerSlug(slug);
   if (!articolo) notFound();
 
-  const tutti = await tuttiGliArticoli();
-  const altri = tutti.filter((a) => a.slug !== articolo.slug).slice(0, 2);
+  const altri = await articoliCorrelati(articolo);
   const voci = titoliArticolo(articolo.corpo);
   const url = urlArticolo(articolo.slug);
 
   return (
     <article className="pagina-articolo">
+      <BarraLettura />
       {/* Sotto le tre sezioni l'indice non aiuta: si abbraccia gia' a occhio. */}
       {voci.length >= 3 && <IndiceArticolo voci={voci} />}
       <Condivisione url={url} titolo={articolo.titolo} variante="lato" />
@@ -186,36 +189,7 @@ export default async function PaginaArticolo(
           <h2>Continua a leggere</h2>
           <div className="elenco-pezzi">
             {altri.map((altro) => (
-              <div className="pezzo" key={altro.slug}>
-                {altro.copertina ? (
-                  <div className="pezzo-immagine">
-                    <Image
-                      src={altro.copertina.url}
-                      alt={altro.copertina.alt}
-                      fill
-                      sizes="168px"
-                      style={{ objectFit: "cover" }}
-                    />
-                  </div>
-                ) : (
-                  <div
-                    className="blocco pezzo-immagine"
-                    data-eti="immagine articolo"
-                  />
-                )}
-                <div className="pezzo-testo">
-                  <Link href={`/${altro.categoria}`} className="categoria">
-                    {nomeCategoria(altro.categoria)}
-                  </Link>
-                  <h3>
-                    <Link href={`/articoli/${altro.slug}`}>
-                      {altro.titolo}
-                    </Link>
-                  </h3>
-                  <p className="sommario">{altro.sommario}</p>
-                  <p className="data">{dataLeggibile(altro.data)}</p>
-                </div>
-              </div>
+              <Pezzo articolo={altro} key={altro.slug} />
             ))}
           </div>
         </div>
