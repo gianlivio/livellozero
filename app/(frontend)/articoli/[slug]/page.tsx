@@ -12,9 +12,21 @@ import {
   nomeCategoria,
   tuttiGliArticoli,
 } from "@/lib/articoli";
+import { ancoraTitolo, titoliArticolo } from "@/lib/indice";
+import IndiceArticolo from "./IndiceArticolo";
 
 const convertitori: JSXConvertersFunction = ({ defaultConverters }) => ({
   ...defaultConverters,
+  // Come il converter di serie, ma gli h2 prendono l'id della loro ancora:
+  // sono le sezioni a cui punta l'indice a lato.
+  heading: ({ node, nodesToJSX, parent, childIndex }) => {
+    const Tag = node.tag;
+    return (
+      <Tag id={node.tag === "h2" ? ancoraTitolo(parent, childIndex) : undefined}>
+        {nodesToJSX({ nodes: node.children })}
+      </Tag>
+    );
+  },
   upload: ({ node }) => {
     if (typeof node.value !== "object" || node.value === null) return null;
     const media = node.value as {
@@ -88,9 +100,12 @@ export default async function PaginaArticolo(
 
   const tutti = await tuttiGliArticoli();
   const altri = tutti.filter((a) => a.slug !== articolo.slug).slice(0, 2);
+  const voci = titoliArticolo(articolo.corpo);
 
   return (
     <article className="pagina-articolo">
+      {/* Sotto le tre sezioni l'indice non aiuta: si abbraccia gia' a occhio. */}
+      {voci.length >= 3 && <IndiceArticolo voci={voci} />}
       <Link href={`/${articolo.categoria}`} className="categoria">
         {nomeCategoria(articolo.categoria)}
       </Link>

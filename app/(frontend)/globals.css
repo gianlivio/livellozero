@@ -6,6 +6,7 @@
   --tenue: #98a2ab;
   --accento: #ff3dbe;
   --griglia: rgba(255, 255, 255, 0.055);
+  --griglia-fondo: rgba(255, 255, 255, 0.0275);
 }
 
 html[data-tema="chiaro"] {
@@ -16,6 +17,7 @@ html[data-tema="chiaro"] {
   --tenue: #59626a;
   --accento: #be0f7c;
   --griglia: rgba(0, 0, 0, 0.055);
+  --griglia-fondo: rgba(0, 0, 0, 0.0275);
 }
 
 * {
@@ -59,10 +61,12 @@ a {
 }
 
 .categoria {
-  font-family: var(--font-ibm-plex-mono), monospace;
+  font-family: var(--font-archivo), sans-serif;
+  font-weight: 600;
   font-size: 12px;
   color: var(--accento);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   text-decoration: none;
 }
 
@@ -391,15 +395,76 @@ a {
   color: var(--tenue);
 }
 
+/* Sulla pagina articolo i margini laterali diventano carta millimetrata: lo
+   stesso reticolo di .blocco, a meta' opacita' perche' si legga appena. */
+body:has(.pagina-articolo) {
+  background-image: linear-gradient(
+      to right,
+      var(--griglia-fondo) 1px,
+      transparent 1px
+    ),
+    linear-gradient(to bottom, var(--griglia-fondo) 1px, transparent 1px);
+  background-size: 34px 34px;
+}
+
+/* Il fondo pieno della colonna copre il reticolo sotto il testo. Il padding
+   cresce da 28 a 40px per staccare il testo dal bordo del fondo; max-width lo
+   compensa, cosi' la misura di lettura resta quella di prima. */
 .pagina-articolo {
-  max-width: 68ch;
+  position: relative;
+  max-width: calc(68ch + 24px);
   margin: 0 auto;
-  padding: 56px 28px;
+  background: var(--fondo);
+  padding: 56px 40px;
 }
 
 .pagina-articolo .categoria {
   display: inline-block;
   margin-bottom: 14px;
+}
+
+/* L'indice sta nel margine sinistro, fuori dalla colonna: il testo resta
+   centrato com'era. Il contenitore e' alto quanto l'articolo e l'elenco ci
+   scorre dentro appiccicato. Compare solo quando quel margine e' abbastanza
+   largo da ospitarlo: sotto i 1100px non c'e' spazio. */
+.articolo-indice {
+  display: none;
+}
+
+@media (min-width: 1100px) {
+  .articolo-indice {
+    display: block;
+    position: absolute;
+    top: 56px;
+    bottom: 0;
+    right: calc(100% + 28px);
+    width: min(200px, calc((100vw - 780px) / 2 - 28px));
+  }
+}
+
+.articolo-indice-elenco {
+  position: sticky;
+  top: 96px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  list-style: none;
+  border-left: 1px solid var(--linea);
+  padding-left: 14px;
+}
+
+.articolo-indice a {
+  font-family: var(--font-archivo), sans-serif;
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--tenue);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.articolo-indice a:hover,
+.articolo-indice a[aria-current="true"] {
+  color: var(--accento);
 }
 
 .articolo-immagine {
@@ -457,6 +522,7 @@ a {
   letter-spacing: -0.015em;
   margin-top: 2.2em;
   margin-bottom: 0.6em;
+  scroll-margin-top: 96px;
 }
 
 .articolo-corpo h3 {
@@ -717,6 +783,11 @@ a {
 
   .articolo-firma {
     grid-template-columns: 1fr;
+  }
+
+  .pagina-articolo {
+    padding-left: 24px;
+    padding-right: 24px;
   }
 
   .piede {
