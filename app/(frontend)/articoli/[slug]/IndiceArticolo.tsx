@@ -35,18 +35,25 @@ export default function IndiceArticolo({ voci }: { voci: VoceIndice[] }) {
 
   return (
     <nav className="articolo-indice" aria-label="Indice dell'articolo">
-      <ul className="articolo-indice-elenco">
-        {voci.map((voce) => (
-          <li key={voce.id}>
-            <a
-              href={`#${voce.id}`}
-              aria-current={voce.id === corrente ? "true" : undefined}
-            >
-              {voce.testo}
-            </a>
-          </li>
-        ))}
-      </ul>
+      <div className="articolo-indice-interna">
+        <p className="colonna-etichetta">Indice</p>
+        {/* Un articolo senza h2 tiene lo stesso la colonna: resta
+            l'intestazione da sola, senza un elenco vuoto sotto. */}
+        {voci.length > 0 && (
+          <ul className="articolo-indice-elenco">
+            {voci.map((voce) => (
+              <li key={voce.id}>
+                <a
+                  href={`#${voce.id}`}
+                  aria-current={voce.id === corrente ? "true" : undefined}
+                >
+                  {voce.testo}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </nav>
   );
 }

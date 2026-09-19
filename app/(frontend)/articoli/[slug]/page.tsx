@@ -15,7 +15,7 @@ import {
 } from "@/lib/articoli";
 import { ancoraTitolo, titoliArticolo } from "@/lib/indice";
 import { urlArticolo } from "@/lib/sito";
-import Pezzo from "../../Pezzo";
+import ArticoliCorrelati from "./ArticoliCorrelati";
 import BarraLettura from "./BarraLettura";
 import Condivisione from "./Condivisione";
 import IndiceArticolo from "./IndiceArticolo";
@@ -103,16 +103,15 @@ export default async function PaginaArticolo(
   const articolo = await articoloPerSlug(slug);
   if (!articolo) notFound();
 
-  const altri = await articoliCorrelati(articolo);
+  const altri = await articoliCorrelati(articolo, 4);
   const voci = titoliArticolo(articolo.corpo);
   const url = urlArticolo(articolo.slug);
 
   return (
     <article className="pagina-articolo">
       <BarraLettura />
-      {/* Sotto le tre sezioni l'indice non aiuta: si abbraccia gia' a occhio. */}
-      {voci.length >= 3 && <IndiceArticolo voci={voci} />}
-      <Condivisione url={url} titolo={articolo.titolo} variante="lato" />
+      <IndiceArticolo voci={voci} />
+      {altri.length > 0 && <ArticoliCorrelati articoli={altri} />}
       <Link href={`/${articolo.categoria}`} className="categoria">
         {nomeCategoria(articolo.categoria)}
       </Link>
@@ -142,9 +141,7 @@ export default async function PaginaArticolo(
         converters={convertitori}
       />
 
-      {/* Sotto i 1250px la colonna a lato sparisce e la condivisione ricompare
-          qui, in orizzontale, in chiusura di lettura. */}
-      <Condivisione url={url} titolo={articolo.titolo} variante="fondo" />
+      <Condivisione url={url} titolo={articolo.titolo} />
 
       {articolo.autore && (
         <aside className="articolo-firma">
@@ -184,16 +181,6 @@ export default async function PaginaArticolo(
         </aside>
       )}
 
-      {altri.length > 0 && (
-        <div className="articolo-continua">
-          <h2>Continua a leggere</h2>
-          <div className="elenco-pezzi">
-            {altri.map((altro) => (
-              <Pezzo articolo={altro} key={altro.slug} />
-            ))}
-          </div>
-        </div>
-      )}
     </article>
   );
 }

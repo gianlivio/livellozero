@@ -479,13 +479,13 @@ body:has(.pagina-articolo) {
   margin-bottom: 14px;
 }
 
-/* Indice a sinistra e condivisione a destra stanno nei margini, fuori dalla
+/* Indice a sinistra e altre letture a destra stanno nei margini, fuori dalla
    colonna: il testo resta centrato com'era. Ogni contenitore e' alto quanto
    l'articolo e quel che c'e' dentro ci scorre appiccicato. Sotto i 1250px il
-   margine si stringe al punto che l'indice diventa illeggibile, con i titoli a
-   capo tre o quattro volte: spariscono (la condivisione ricompare in fondo). */
+   margine si stringe al punto che diventano illeggibili, con i titoli a capo
+   tre o quattro volte: spariscono tutte e due. */
 .articolo-indice,
-.condivisione-lato {
+.articolo-correlati {
   display: none;
 }
 
@@ -496,7 +496,7 @@ body:has(.pagina-articolo) {
      blocco contenitore), quindi il conto regge qualunque cosa misuri un "ch";
      i 24px sono la barra di scorrimento, che 100vw conta e le media query no. */
   .articolo-indice,
-  .condivisione-lato {
+  .articolo-correlati {
     --distacco: 28px;
     --margine: 16px;
     display: block;
@@ -513,24 +513,31 @@ body:has(.pagina-articolo) {
     right: calc(100% + var(--distacco));
   }
 
-  .condivisione-lato {
+  .articolo-correlati {
     left: calc(100% + var(--distacco));
-  }
-
-  .condivisione-fondo {
-    display: none;
   }
 }
 
-.articolo-indice-elenco {
+/* Il filetto a lato parte dall'intestazione e scende: sta sul contenitore,
+   non sull'elenco, se no un indice senza voci resterebbe senza riga. */
+.articolo-indice-interna,
+.articolo-correlati-interna {
   position: sticky;
   top: 96px;
+  border-left: 1px solid var(--linea);
+  padding-left: 14px;
+}
+
+.articolo-indice-elenco,
+.articolo-correlati-elenco {
   display: flex;
   flex-direction: column;
   gap: 10px;
   list-style: none;
-  border-left: 1px solid var(--linea);
-  padding-left: 14px;
+}
+
+.articolo-correlati-elenco {
+  gap: 16px;
 }
 
 .articolo-indice a {
@@ -547,14 +554,8 @@ body:has(.pagina-articolo) {
   color: var(--accento);
 }
 
-.condivisione-lato .condivisione-interna {
-  position: sticky;
-  top: 96px;
-  border-left: 1px solid var(--linea);
-  padding-left: 14px;
-}
-
-.condivisione-etichetta {
+.condivisione-etichetta,
+.colonna-etichetta {
   font-family: var(--font-archivo), sans-serif;
   font-weight: 600;
   font-size: 12px;
@@ -562,6 +563,43 @@ body:has(.pagina-articolo) {
   text-transform: uppercase;
   color: var(--tenue);
   margin-bottom: 14px;
+}
+
+.articolo-correlati-elenco a {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-decoration: none;
+}
+
+.articolo-correlati-categoria {
+  font-family: var(--font-archivo), sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tenue);
+  transition: color 0.2s ease;
+}
+
+/* Due righe al massimo: oltre, i titoli lunghi allungherebbero la colonna
+   fino a farle perdere il passo con il testo a fianco. */
+.articolo-correlati-titolo {
+  font-family: var(--font-archivo), sans-serif;
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--tenue);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.2s ease;
+}
+
+.articolo-correlati-elenco a:hover .articolo-correlati-titolo,
+.articolo-correlati-elenco a:hover .articolo-correlati-categoria {
+  color: var(--accento);
 }
 
 .condivisione-pulsanti {
@@ -596,14 +634,14 @@ body:has(.pagina-articolo) {
   flex-shrink: 0;
 }
 
-/* In chiusura d'articolo: stessa roba, ma in riga. */
-.condivisione-fondo {
+/* In chiusura d'articolo, sempre: in riga, a tutte le larghezze. */
+.condivisione {
   margin-top: 48px;
   padding-top: 26px;
   border-top: 1px solid var(--linea);
 }
 
-.condivisione-fondo .condivisione-pulsanti {
+.condivisione .condivisione-pulsanti {
   flex-direction: row;
   flex-wrap: wrap;
   gap: 14px 24px;
@@ -756,20 +794,6 @@ body:has(.pagina-articolo) {
   color: var(--testo);
   border-bottom: 1px solid var(--accento);
   padding-bottom: 2px;
-}
-
-.articolo-continua {
-  margin-top: 64px;
-  padding-top: 40px;
-  border-top: 1px solid var(--linea);
-}
-
-.articolo-continua h2 {
-  font-family: var(--font-archivo), sans-serif;
-  font-weight: 600;
-  font-size: 15px;
-  color: var(--tenue);
-  margin-bottom: 24px;
 }
 
 .pagina-chi-sono {

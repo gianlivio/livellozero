@@ -4,11 +4,11 @@ import { IconaTelegram, IconaWhatsApp, IconaX } from "./icone";
 type Props = {
   url: string;
   titolo: string;
-  /** "lato" e' la colonna appiccicata a destra, "fondo" la riga di chiusura. */
-  variante: "lato" | "fondo";
 };
 
-export default function Condivisione({ url, titolo, variante }: Props) {
+/** La riga di chiusura dell'articolo, a tutte le larghezze: la colonna a
+ *  destra adesso tiene le altre letture, non i pulsanti. */
+export default function Condivisione({ url, titolo }: Props) {
   const destinazioni = [
     {
       nome: "WhatsApp",
@@ -33,27 +33,22 @@ export default function Condivisione({ url, titolo, variante }: Props) {
   ];
 
   return (
-    <aside
-      className={`condivisione condivisione-${variante}`}
-      aria-label="Condividi l'articolo"
-    >
-      <div className="condivisione-interna">
-        <p className="condivisione-etichetta">Condividi</p>
-        <div className="condivisione-pulsanti">
-          {destinazioni.map((destinazione) => (
-            <a
-              key={destinazione.nome}
-              className="condivisione-voce"
-              href={destinazione.href}
-              rel="noreferrer"
-              target="_blank"
-            >
-              {destinazione.icona}
-              <span>{destinazione.nome}</span>
-            </a>
-          ))}
-          <CopiaLink url={url} />
-        </div>
+    <aside className="condivisione" aria-label="Condividi l'articolo">
+      <p className="condivisione-etichetta">Condividi</p>
+      <div className="condivisione-pulsanti">
+        {destinazioni.map((destinazione) => (
+          <a
+            key={destinazione.nome}
+            className="condivisione-voce"
+            href={destinazione.href}
+            rel="noreferrer"
+            target="_blank"
+          >
+            {destinazione.icona}
+            <span>{destinazione.nome}</span>
+          </a>
+        ))}
+        <CopiaLink url={url} />
       </div>
     </aside>
   );
