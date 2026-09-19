@@ -21,9 +21,7 @@ export default function NotFound() {
         ))}
       </nav>
 
-      <div className="pagina-404-ricerca">
-        <CampoRicerca variante="pagina" />
-      </div>
+      <CampoRicerca variante="pagina" />
     </section>
   );
 }
