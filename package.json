@@ -7,6 +7,7 @@
     "build": "tsx scripts/importmap.mts && next build",
     "start": "next start",
     "lint": "eslint",
+    "verifica": "tsx scripts/verifica.mts",
     "migrazione:crea": "tsx scripts/migrazione.mts",
     "migrazione:applica": "tsx scripts/migrazione-applica.mts",
     "tipi:genera": "tsx scripts/tipi.mts",
