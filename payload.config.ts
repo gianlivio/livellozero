@@ -11,6 +11,8 @@ import { Utenti } from "./collections/Utenti";
 import { Media } from "./collections/Media";
 import { Articoli } from "./collections/Articoli";
 import { Autori } from "./collections/Autori";
+import { ChiSono } from "./globals/ChiSono";
+import { Progetto } from "./globals/Progetto";
 import { migrations } from "./migrations";
 
 const filename = fileURLToPath(import.meta.url);
@@ -50,6 +52,7 @@ export default buildConfig({
     },
   },
   collections: [Utenti, Media, Autori, Articoli],
+  globals: [ChiSono, Progetto],
   editor: lexicalEditor(),
   i18n: {
     supportedLanguages: { it },

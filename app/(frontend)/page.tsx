@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { elencoArticoli, nomeCategoria, paginaRichiesta } from "@/lib/articoli";
+import { immagineDa, leggiChiSono, primoParagrafo } from "@/lib/pagine";
 import Paginazione from "./Paginazione";
 import Pezzo from "./Pezzo";
 
@@ -9,6 +10,9 @@ export const revalidate = 3600;
 export default async function Home(props: PageProps<"/">) {
   const parametri = await props.searchParams;
   const elenco = await elencoArticoli(paginaRichiesta(parametri.pagina));
+  const chiSono = await leggiChiSono();
+  const foto = immagineDa(chiSono.foto);
+  const paragrafo = primoParagrafo(chiSono.testo);
 
   // L'apertura e' il primo articolo della prima pagina, e conta nei dieci:
   // dalla seconda in poi non c'e' niente in evidenza e l'elenco li prende tutti.
@@ -81,23 +85,34 @@ export default async function Home(props: PageProps<"/">) {
       )}
 
       <section className="guscio autore">
-        <div className="blocco autore-foto" data-eti="foto" />
+        {foto && (
+          <div className="autore-foto">
+            <Image
+              src={foto.url!}
+              alt={foto.alt ?? ""}
+              width={foto.width ?? 400}
+              height={foto.height ?? 400}
+              sizes="112px"
+              style={{ width: "100%", height: "auto" }}
+            />
+          </div>
+        )}
         <div className="autore-testo">
-          <h2>Chi sono</h2>
-          <p>
-            Scrivo di videogiochi da quando ho capito che la parte più
-            interessante non è giocarli, ma capire come sono stati costruiti.
-            Qui racconto le storie che stanno sotto ai titoli: le idee
-            iniziali, i cambi di rotta, le cose che non hanno funzionato.
-          </p>
-          <p>
-            Il sito è un progetto indipendente. Se vuoi propormi una
-            collaborazione o semplicemente dirmi che ho sbagliato qualcosa,
-            scrivimi.
-          </p>
+          <h2>{chiSono.titolo}</h2>
+          {paragrafo && <p>{paragrafo}</p>}
           <div className="autore-link">
-            <a href="#">Instagram</a>
-            <a href="#">Scrivimi</a>
+            {chiSono.instagram && (
+              <a
+                href={`https://instagram.com/${chiSono.instagram}`}
+                rel="noreferrer"
+                target="_blank"
+              >
+                Instagram
+              </a>
+            )}
+            {chiSono.email && (
+              <a href={`mailto:${chiSono.email}`}>Scrivimi</a>
+            )}
             <Link href="/progetto">Sostieni il progetto</Link>
           </div>
         </div>

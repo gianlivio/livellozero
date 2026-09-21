@@ -6,7 +6,6 @@
   --tenue: #98a2ab;
   --accento: #ff3dbe;
   --griglia: rgba(255, 255, 255, 0.055);
-  --griglia-fondo: rgba(255, 255, 255, 0.0275);
 }
 
 html[data-tema="chiaro"] {
@@ -17,7 +16,6 @@ html[data-tema="chiaro"] {
   --tenue: #59626a;
   --accento: #be0f7c;
   --griglia: rgba(0, 0, 0, 0.055);
-  --griglia-fondo: rgba(0, 0, 0, 0.0275);
 }
 
 * {
@@ -452,26 +450,12 @@ a {
   color: var(--tenue);
 }
 
-/* Sulla pagina articolo i margini laterali diventano carta millimetrata: lo
-   stesso reticolo di .blocco, a meta' opacita' perche' si legga appena. */
-body:has(.pagina-articolo) {
-  background-image: linear-gradient(
-      to right,
-      var(--griglia-fondo) 1px,
-      transparent 1px
-    ),
-    linear-gradient(to bottom, var(--griglia-fondo) 1px, transparent 1px);
-  background-size: 34px 34px;
-}
-
-/* Il fondo pieno della colonna copre il reticolo sotto il testo; i 40px di
-   padding staccano il testo dal bordo del fondo. */
+/* position: relative perche' le due colonne laterali si posizionano su questa. */
 .pagina-articolo {
   position: relative;
   max-width: 76ch;
   margin: 0 auto;
-  background: var(--fondo);
-  padding: 56px 40px;
+  padding: 56px 28px;
 }
 
 .pagina-articolo .categoria {
@@ -806,6 +790,13 @@ body:has(.pagina-articolo) {
 
 .chi-sono-foto {
   aspect-ratio: 1 / 1;
+}
+
+/* Senza foto caricata la colonna stretta non ha niente da tenere, e il testo
+   finirebbe schiacciato dentro i suoi 112/160px: resta una colonna sola. */
+.autore:not(:has(.autore-foto)),
+.pagina-chi-sono:not(:has(.chi-sono-foto)) {
+  grid-template-columns: 1fr;
 }
 
 .pagina-chi-sono h1 {
