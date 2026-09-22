@@ -170,22 +170,25 @@ raccogliImmagini(home.html);
 sezione("Marchio");
 const testata = fra(home.html, /<header\b/, "</header>");
 esito(testata !== "", "la testata c'e'");
-const imgMarchio = testata.match(/<img\b[^>]*class="[^"]*marchio-segno[^"]*"[^>]*>/);
-const svgMarchio = /<svg\b[^>]*class="[^"]*marchio-segno/.test(testata);
+// Il componente Marchio non mette classi: si riconosce dal file a cui punta,
+// che next/image nasconde dentro il parametro url= gia' codificato.
+const imgMarchio = [...testata.matchAll(/<img\b[^>]*>/g)]
+  .map((tag) => tag[0])
+  .find((tag) => /logo\.png/i.test(scioglieEntita(tag)));
 esito(
-  imgMarchio !== null,
-  "il logo nella testata e' un'immagine",
-  imgMarchio ? "" : svgMarchio ? "c'e' ancora l'SVG ridisegnato, non l'immagine dell'autore" : "nessun marchio trovato"
+  imgMarchio !== undefined,
+  "il logo nella testata c'e'",
+  imgMarchio ? "" : "nessuna <img> che punti a logo.png"
 );
 if (imgMarchio) {
-  for (const u of immagini(imgMarchio[0])) {
+  for (const u of immagini(imgMarchio)) {
     daControllare.add(assoluto(u));
     const o = originale(u);
     if (o) daControllare.add(assoluto(o));
   }
 }
-const statoPng = await stato(`${BASE}/marchio.png`);
-esito(statoPng === 200, "/marchio.png raggiungibile", `stato ${statoPng}`);
+const statoPng = await stato(`${BASE}/logo.png`);
+esito(statoPng === 200, "/logo.png raggiungibile", `stato ${statoPng}`);
 
 // ---- categorie
 sezione("Categorie");
