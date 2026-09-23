@@ -53,7 +53,7 @@ a {
 }
 
 .guscio {
-  max-width: 1080px;
+  max-width: 1240px;
   margin: 0 auto;
   padding: 0 28px;
 }
@@ -274,9 +274,20 @@ a {
   font-size: 14px;
 }
 
-.apertura-immagine {
-  position: relative;
-  overflow: hidden;
+/* Come la copertina dell'articolo: l'immagine tiene le sue proporzioni e sta
+   larga quanto la sua colonna. Oltre i 540px di altezza — cioe' la larghezza
+   della colonna a guscio pieno, cosi' una copertina quadrata resta intera —
+   invece di allungare la riga si ritaglia sul centro. */
+.apertura-immagine img {
+  display: block;
+  max-height: 540px;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Senza copertina non c'e' un'immagine a dare altezza al riquadro: il 4/3 di
+   prima resta, ma solo per il segnaposto. */
+.apertura-immagine.blocco {
   aspect-ratio: 4 / 3;
 }
 
@@ -320,8 +331,11 @@ a {
 }
 
 .pezzo {
+  /* La stessa misura serve due volte: la colonna della miniatura e il limite
+     oltre cui la miniatura si ritaglia. Un valore solo, cosi' non divergono. */
+  --miniatura: 168px;
   display: grid;
-  grid-template-columns: 168px 1fr;
+  grid-template-columns: var(--miniatura) 1fr;
   gap: 26px;
   padding: 26px 0;
   border-bottom: 1px solid var(--linea);
@@ -331,9 +345,14 @@ a {
   border-bottom: none;
 }
 
-.pezzo-immagine {
-  position: relative;
-  overflow: hidden;
+.pezzo-immagine img {
+  display: block;
+  max-height: var(--miniatura);
+  object-fit: cover;
+  object-position: center;
+}
+
+.pezzo-immagine.blocco {
   aspect-ratio: 16 / 10;
 }
 
@@ -453,7 +472,7 @@ a {
 /* position: relative perche' le due colonne laterali si posizionano su questa. */
 .pagina-articolo {
   position: relative;
-  max-width: 76ch;
+  max-width: 86ch;
   margin: 0 auto;
   padding: 56px 28px;
 }
@@ -465,15 +484,18 @@ a {
 
 /* Indice a sinistra e altre letture a destra stanno nei margini, fuori dalla
    colonna: il testo resta centrato com'era. Ogni contenitore e' alto quanto
-   l'articolo e quel che c'e' dentro ci scorre appiccicato. Sotto i 1250px il
+   l'articolo e quel che c'e' dentro ci scorre appiccicato. Sotto la soglia il
    margine si stringe al punto che diventano illeggibili, con i titoli a capo
-   tre o quattro volte: spariscono tutte e due. */
+   tre o quattro volte: spariscono tutte e due. La soglia e' 1360 e non 1250
+   perche' la colonna e' passata da 76ch a 86ch (775px -> 877px): a 1250 le due
+   fasce scenderebbero a 130px, a 1360 restano 185px, cioe' quanto misuravano
+   alla vecchia soglia. */
 .articolo-indice,
 .articolo-correlati {
   display: none;
 }
 
-@media (min-width: 1250px) {
+@media (min-width: 1360px) {
   /* La larghezza e' quel che avanza fra la colonna e il bordo della finestra,
      meno il distacco dal testo e un margine perche' alla soglia non finiscano
      appiccicate al bordo della finestra. Il 100% e' la colonna stessa (e' il
@@ -980,7 +1002,7 @@ a {
   }
 
   .pezzo {
-    grid-template-columns: 96px 1fr;
+    --miniatura: 96px;
   }
 
   .autore {

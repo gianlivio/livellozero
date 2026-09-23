@@ -22,7 +22,7 @@ export default async function ChiSonoPagina() {
             alt={foto.alt ?? ""}
             width={foto.width ?? 400}
             height={foto.height ?? 400}
-            sizes="160px"
+            sizes="(max-width: 760px) calc(100vw - 56px), 160px"
             style={{ width: "100%", height: "auto" }}
           />
         </div>

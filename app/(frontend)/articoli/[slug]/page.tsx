@@ -51,7 +51,8 @@ const convertitori: JSXConvertersFunction = ({ defaultConverters }) => ({
           alt={media.alt ?? ""}
           width={media.width ?? 1600}
           height={media.height ?? 900}
-          sizes="(max-width: 720px) 100vw, 720px"
+          sizes="(max-width: 760px) calc(100vw - 48px), 824px"
+          quality={90}
           style={{ width: "100%", height: "auto" }}
         />
         {didascalia && (
@@ -122,7 +123,8 @@ export default async function PaginaArticolo(
             alt={articolo.copertina.alt}
             width={articolo.copertina.larghezza ?? 1600}
             height={articolo.copertina.altezza ?? 900}
-            sizes="(max-width: 720px) 100vw, 720px"
+            sizes="(max-width: 760px) calc(100vw - 48px), 824px"
+            quality={90}
             style={{ width: "100%", height: "auto" }}
             preload
           />
@@ -148,10 +150,10 @@ export default async function PaginaArticolo(
           {articolo.autore.foto ? (
             <div className="articolo-firma-foto">
               <Image
-                src={articolo.autore.foto.ritratto ?? articolo.autore.foto.url}
+                src={articolo.autore.foto.url}
                 alt={articolo.autore.foto.alt}
                 fill
-                sizes="120px"
+                sizes="(max-width: 760px) calc(100vw - 48px), 120px"
                 style={{ objectFit: "cover", objectPosition: "top" }}
               />
             </div>

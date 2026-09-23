@@ -15,9 +15,11 @@ export default function Pezzo({ articolo }: { articolo: Articolo }) {
           <Image
             src={articolo.copertina.url}
             alt={articolo.copertina.alt}
-            fill
-            sizes="168px"
-            style={{ objectFit: "cover" }}
+            width={articolo.copertina.larghezza ?? 1600}
+            height={articolo.copertina.altezza ?? 900}
+            sizes="(max-width: 760px) 96px, 168px"
+            quality={90}
+            style={{ width: "100%", height: "auto" }}
           />
         </div>
       ) : (

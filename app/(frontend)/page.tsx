@@ -42,10 +42,12 @@ export default async function Home(props: PageProps<"/">) {
               <Image
                 src={apertura.copertina.url}
                 alt={apertura.copertina.alt}
-                fill
-                sizes="(max-width: 720px) 100vw, 50vw"
-                style={{ objectFit: "cover" }}
-                priority
+                width={apertura.copertina.larghezza ?? 1600}
+                height={apertura.copertina.altezza ?? 900}
+                sizes="(max-width: 760px) calc(100vw - 56px), (max-width: 1240px) calc(47.5vw - 47.5px), 542px"
+                quality={90}
+                style={{ width: "100%", height: "auto" }}
+                preload
               />
             </div>
           ) : (
@@ -92,7 +94,7 @@ export default async function Home(props: PageProps<"/">) {
               alt={foto.alt ?? ""}
               width={foto.width ?? 400}
               height={foto.height ?? 400}
-              sizes="112px"
+              sizes="(max-width: 760px) calc(100vw - 56px), 112px"
               style={{ width: "100%", height: "auto" }}
             />
           </div>
