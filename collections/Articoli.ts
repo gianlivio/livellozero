@@ -18,6 +18,7 @@ function rivalidaPercorsi(doc: { categoria?: unknown; slug?: unknown } | null | 
   if (!doc) return
   try {
     revalidatePath('/')
+    revalidatePath('/sitemap.xml')
     if (typeof doc.categoria === 'string') {
       revalidatePath(`/${doc.categoria}`)
     }

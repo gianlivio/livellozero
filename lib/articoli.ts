@@ -182,6 +182,25 @@ export async function tuttiGliArticoli(): Promise<Articolo[]> {
   return risultato.docs.map(mappaArticolo);
 }
 
+/** Per la sitemap bastano indirizzo e data dell'ultima modifica. */
+export async function articoliPerSitemap(): Promise<
+  { slug: string; aggiornato: string }[]
+> {
+  const payload = await ottieniPayload();
+  const risultato = await payload.find({
+    collection: "articoli",
+    where: PUBBLICATI,
+    sort: "-dataPubblicazione",
+    select: { slug: true, updatedAt: true },
+    depth: 0,
+    limit: 0,
+  });
+  return risultato.docs.map((doc) => ({
+    slug: doc.slug,
+    aggiornato: doc.updatedAt,
+  }));
+}
+
 export async function elencoArticoli(pagina = 1): Promise<Elenco> {
   return trovaElenco(PUBBLICATI, pagina);
 }

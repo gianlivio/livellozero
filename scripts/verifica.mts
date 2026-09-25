@@ -12,6 +12,10 @@
 
 const BASE = (process.env.SITO ?? "https://livellozero.vercel.app").replace(/\/$/, "");
 
+/** Il dominio che sitemap e robots devono citare, qualunque copia si stia
+ *  controllando: anche in locale gli indirizzi sono quelli pubblici. */
+const DOMINIO = (process.env.DOMINIO ?? "https://livellozero.games").replace(/\/$/, "");
+
 /** Le cinque sezioni. Tenute qui a mano apposta: se il sito ne mostrasse una
  *  in piu' o in meno il controllo sulla navigazione se ne accorge. */
 const CATEGORIE = [
@@ -281,6 +285,34 @@ esito(
   categorieIn404.length === CATEGORIE.length,
   "la 404 mostra le categorie",
   `${categorieIn404.length} su ${CATEGORIE.length}`
+);
+
+// ---- sitemap e robots
+sezione("Sitemap e robots");
+const mappa = await prendi("/sitemap.xml");
+esito(mappa.stato === 200, "/sitemap.xml risponde 200", mappa.errore ?? `stato ${mappa.stato}`);
+const indirizzi = [...mappa.html.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+const fuoriDominio = indirizzi.filter((u) => new URL(u).origin !== DOMINIO);
+esito(
+  indirizzi.length > 0 && fuoriDominio.length === 0,
+  `la sitemap usa solo ${DOMINIO}`,
+  fuoriDominio.length ? fuoriDominio.slice(0, 3).join(", ") : `${indirizzi.length} indirizzi`
+);
+const percorsi = new Set(indirizzi.map((u) => new URL(u).pathname));
+const attesi = ["/", ...CATEGORIE.map((c) => `/${c}`), "/chi-sono", "/progetto", ...slug.map((s) => `/articoli/${s}`)];
+const assenti = attesi.filter((p) => !percorsi.has(p));
+esito(assenti.length === 0, "la sitemap contiene home, categorie, pagine e articoli", assenti.length ? `mancano: ${assenti.join(", ")}` : `${attesi.length} su ${attesi.length}`);
+const vietati = indirizzi.filter((u) => /\/(cerca|admin)(\/|$)|\?/.test(u));
+esito(vietati.length === 0, "la sitemap non contiene /cerca, /admin o querystring", vietati.join(", "));
+
+const robot = await prendi("/robots.txt");
+esito(robot.stato === 200, "/robots.txt risponde 200", robot.errore ?? `stato ${robot.stato}`);
+const divieti = ["/admin", "/api", "/cerca"].filter((p) => !robot.html.includes(`Disallow: ${p}`));
+esito(divieti.length === 0, "robots.txt vieta /admin, /api e /cerca", divieti.length ? `mancano: ${divieti.join(", ")}` : "");
+esito(
+  robot.html.includes(`Sitemap: ${DOMINIO}/sitemap.xml`),
+  "robots.txt indica la sitemap sul dominio giusto",
+  robot.html.match(/Sitemap: .*/)?.[0] ?? "nessuna riga Sitemap"
 );
 
 // ---- pannello
