@@ -3,6 +3,7 @@ import * as migration_20260902_153945_editor_immagini from './20260902_153945_ed
 import * as migration_20260904_101958_autori_e_anteprima from './20260904_101958_autori_e_anteprima';
 import * as migration_20260911_125754_formato_ritratto from './20260911_125754_formato_ritratto';
 import * as migration_20260921_165038_pagine_editabili from './20260921_165038_pagine_editabili';
+import * as migration_20260925_055923_descrizioni_categorie from './20260925_055923_descrizioni_categorie';
 
 export const migrations = [
   {
@@ -28,6 +29,11 @@ export const migrations = [
   {
     up: migration_20260921_165038_pagine_editabili.up,
     down: migration_20260921_165038_pagine_editabili.down,
-    name: '20260921_165038_pagine_editabili'
+    name: '20260921_165038_pagine_editabili',
+  },
+  {
+    up: migration_20260925_055923_descrizioni_categorie.up,
+    down: migration_20260925_055923_descrizioni_categorie.down,
+    name: '20260925_055923_descrizioni_categorie'
   },
 ];

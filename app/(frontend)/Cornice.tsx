@@ -1,5 +1,6 @@
 import { Archivo, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import Link from "next/link";
+import { CATEGORIE } from "@/lib/articoli";
 import CampoRicerca from "./CampoRicerca";
 import Marchio from "./Marchio";
 import InterruttoreTema from "./InterruttoreTema";
@@ -52,11 +53,11 @@ export function Testata() {
           <span className="marchio-nome">LIVELLO ZERO</span>
         </Link>
         <nav className="navigazione">
-          <Link href="/approfondimenti">Approfondimenti</Link>
-          <Link href="/recensioni">Recensioni</Link>
-          <Link href="/consigli">Consigli</Link>
-          <Link href="/riflessioni">Riflessioni</Link>
-          <Link href="/classifiche">Classifiche</Link>
+          {CATEGORIE.map((categoria) => (
+            <Link href={`/${categoria.chiave}`} key={categoria.chiave}>
+              {categoria.nome}
+            </Link>
+          ))}
           <Link href="/chi-sono">Chi sono</Link>
         </nav>
         <CampoRicerca />

@@ -108,7 +108,7 @@ export const Articoli: CollectionConfig = {
       options: [
         { value: 'approfondimenti', label: 'Approfondimenti' },
         { value: 'recensioni', label: 'Recensioni' },
-        { value: 'consigli', label: 'Consigli' },
+        { value: 'consigli', label: 'Notizie' },
         { value: 'riflessioni', label: 'Riflessioni' },
         { value: 'classifiche', label: 'Classifiche' },
       ],

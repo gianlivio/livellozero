@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { articoliPerCategoria, CATEGORIE, paginaRichiesta } from "@/lib/articoli";
+import {
+  articoliPerCategoria,
+  CATEGORIE,
+  descrizioneCategoria,
+  paginaRichiesta,
+} from "@/lib/articoli";
 import Paginazione from "../Paginazione";
 import Pezzo from "../Pezzo";
 
@@ -30,15 +35,15 @@ export default async function PaginaCategoria(
   if (!info) notFound();
 
   const parametri = await props.searchParams;
-  const elenco = await articoliPerCategoria(
-    info.chiave,
-    paginaRichiesta(parametri.pagina)
-  );
+  const [elenco, descrizione] = await Promise.all([
+    articoliPerCategoria(info.chiave, paginaRichiesta(parametri.pagina)),
+    descrizioneCategoria(info.chiave),
+  ]);
 
   return (
     <section className="guscio pagina-categoria">
       <h1>{info.nome}</h1>
-      <p className="descrizione">{info.descrizione}</p>
+      {descrizione && <p className="descrizione">{descrizione}</p>}
 
       {elenco.articoli.length === 0 ? (
         <p className="vuoto">Ancora nessun articolo in questa sezione.</p>

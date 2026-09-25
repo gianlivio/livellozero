@@ -524,29 +524,46 @@ a {
   }
 }
 
-/* Il filetto a lato parte dall'intestazione e scende: sta sul contenitore,
-   non sull'elenco, se no un indice senza voci resterebbe senza riga. */
+/* Ogni colonna e' un riquadro: l'intestazione sta sul contenitore e non
+   sull'elenco, se no un indice senza voci resterebbe un riquadro vuoto. */
 .articolo-indice-interna,
 .articolo-correlati-interna {
   position: sticky;
   top: 96px;
-  border-left: 1px solid var(--linea);
-  padding-left: 14px;
+  background-color: var(--fondo2);
+  border: 1px solid var(--linea);
+  border-radius: 0;
+  padding: 20px;
+}
+
+/* L'intestazione esce dal padding del riquadro e lo copre in cima da bordo
+   a bordo. */
+.colonna-etichetta {
+  font-family: var(--font-archivo), sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fondo);
+  background-color: var(--accento);
+  padding: 6px 10px;
+  margin: -20px -20px 16px;
 }
 
 .articolo-indice-elenco,
 .articolo-correlati-elenco {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
   list-style: none;
 }
 
-.articolo-correlati-elenco {
-  gap: 16px;
+.articolo-indice-elenco li + li,
+.articolo-correlati-elenco li + li {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--linea);
 }
 
 .articolo-indice a {
+  display: block;
   font-family: var(--font-archivo), sans-serif;
   font-size: 13px;
   line-height: 1.35;
@@ -560,8 +577,11 @@ a {
   color: var(--accento);
 }
 
-.condivisione-etichetta,
-.colonna-etichetta {
+.articolo-indice a[aria-current="true"] {
+  font-weight: 700;
+}
+
+.condivisione-etichetta {
   font-family: var(--font-archivo), sans-serif;
   font-weight: 600;
   font-size: 12px;

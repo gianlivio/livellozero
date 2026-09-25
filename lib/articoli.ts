@@ -41,44 +41,32 @@ export type Articolo = {
   autore: Autore | null;
 };
 
-export const CATEGORIE: {
-  chiave: Categoria;
-  nome: string;
-  descrizione: string;
-}[] = [
-  {
-    chiave: "approfondimenti",
-    nome: "Approfondimenti",
-    descrizione:
-      "Come nascono i giochi: l'idea iniziale, lo sviluppo, le cose cambiate lungo la strada.",
-  },
-  {
-    chiave: "recensioni",
-    nome: "Recensioni",
-    descrizione: "Giudizi personali, senza voti numerici.",
-  },
-  {
-    chiave: "consigli",
-    nome: "Consigli",
-    descrizione:
-      "Cosa giocare dopo un certo titolo, o se cerchi una certa atmosfera.",
-  },
-  {
-    chiave: "riflessioni",
-    nome: "Riflessioni",
-    descrizione:
-      "Ragionamenti su come stanno cambiando i videogiochi e chi li fa.",
-  },
-  {
-    chiave: "classifiche",
-    nome: "Classifiche",
-    descrizione: "Liste ragionate su una saga, un autore, un genere.",
-  },
+/**
+ * Chiave e nome restano qui: la chiave e' l'indirizzo della pagina, e un nome
+ * cambiato dal pannello non deve poter rompere il menu. Le descrizioni invece
+ * stanno nel global "categorie": vedi descrizioneCategoria.
+ */
+export const CATEGORIE: { chiave: Categoria; nome: string }[] = [
+  { chiave: "approfondimenti", nome: "Approfondimenti" },
+  { chiave: "recensioni", nome: "Recensioni" },
+  { chiave: "consigli", nome: "Notizie" },
+  { chiave: "riflessioni", nome: "Riflessioni" },
+  { chiave: "classifiche", nome: "Classifiche" },
 ];
 
 async function ottieniPayload() {
   const resolvedConfig = await config;
   return getPayload({ config: resolvedConfig });
+}
+
+/** La descrizione scritta nel pannello, o stringa vuota se non c'e'. */
+export async function descrizioneCategoria(
+  categoria: Categoria
+): Promise<string> {
+  const payload = await ottieniPayload();
+  const globale = await payload.findGlobal({ slug: "categorie", depth: 0 });
+  const voce = globale.voci?.find((v) => v.chiave === categoria);
+  return voce?.descrizione?.trim() ?? "";
 }
 
 function mappaImmagine(

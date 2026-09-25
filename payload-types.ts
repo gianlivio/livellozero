@@ -94,10 +94,12 @@ export interface Config {
   globals: {
     'chi-sono': ChiSono;
     progetto: Progetto;
+    categorie: Categorie;
   };
   globalsSelect: {
     'chi-sono': ChiSonoSelect<false> | ChiSonoSelect<true>;
     progetto: ProgettoSelect<false> | ProgettoSelect<true>;
+    categorie: CategorieSelect<false> | CategorieSelect<true>;
   };
   locale: null;
   widgets: {
@@ -553,6 +555,25 @@ export interface Progetto {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categorie".
+ */
+export interface Categorie {
+  id: number;
+  /**
+   * Il testo che compare sotto il titolo nella pagina di ogni categoria. Vuoto, non compare niente.
+   */
+  voci?:
+    | {
+        chiave: 'approfondimenti' | 'recensioni' | 'consigli' | 'riflessioni' | 'classifiche';
+        descrizione?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "chi-sono_select".
  */
 export interface ChiSonoSelect<T extends boolean = true> {
@@ -574,6 +595,22 @@ export interface ProgettoSelect<T extends boolean = true> {
   testo?: T;
   donazioniTesto?: T;
   donazioniLink?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categorie_select".
+ */
+export interface CategorieSelect<T extends boolean = true> {
+  voci?:
+    | T
+    | {
+        chiave?: T;
+        descrizione?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
