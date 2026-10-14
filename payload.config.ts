@@ -34,6 +34,9 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    components: {
+      beforeDashboard: ["/components/RiquadroSearchConsole#default"],
+    },
     livePreview: {
       collections: ["articoli"],
       breakpoints: [

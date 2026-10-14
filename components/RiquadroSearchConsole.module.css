@@ -1,0 +1,93 @@
+/* Solo variabili del pannello Payload: segue da solo il tema chiaro e scuro. */
+
+.riquadro {
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--style-radius-m, 4px);
+  background: var(--theme-elevation-50);
+  padding: 24px;
+  margin-bottom: 40px;
+}
+
+.titolo {
+  font-size: 20px;
+  margin: 0 0 4px;
+}
+
+.sottotitolo {
+  font-size: 15px;
+  margin: 28px 0 10px;
+}
+
+.nota {
+  font-size: 13px;
+  color: var(--theme-elevation-500);
+  margin: 0;
+}
+
+.vuoto {
+  color: var(--theme-elevation-500);
+  margin: 8px 0 0;
+}
+
+.numeri {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.numero {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  background: var(--theme-elevation-0);
+  border: 1px solid var(--theme-elevation-100);
+  border-radius: var(--style-radius-s, 3px);
+}
+
+.nome {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--theme-elevation-600);
+}
+
+.valore {
+  font-size: 32px;
+  line-height: 1.1;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.spiegazione {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--theme-elevation-500);
+}
+
+.tabella {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.tabella th,
+.tabella td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--theme-elevation-100);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.tabella th:first-child,
+.tabella td:first-child {
+  text-align: left;
+}
+
+.tabella th {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--theme-elevation-600);
+}
