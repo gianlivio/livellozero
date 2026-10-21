@@ -1,6 +1,6 @@
 import { Archivo, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import Link from "next/link";
-import { CATEGORIE } from "@/lib/articoli";
+import { CATEGORIE, percorsoCategoria } from "@/lib/articoli";
 import { inLingua, LINGUA_PREDEFINITA, percorsi, type Lingua } from "@/lib/lingue";
 import { testi } from "@/lib/testi";
 import CampoRicerca from "./CampoRicerca";
@@ -63,7 +63,7 @@ export function Testata({
         <nav className="navigazione">
           {CATEGORIE.map((categoria) => (
             <Link
-              href={`/${inLingua(categoria.percorso, lingua)}`}
+              href={percorsoCategoria(categoria.chiave, lingua)}
               key={categoria.chiave}
             >
               {inLingua(categoria.nome, lingua)}
@@ -72,7 +72,7 @@ export function Testata({
           <Link href={p.chiSono}>{t.chiSono}</Link>
         </nav>
         <CampoRicerca lingua={lingua} />
-        <InterruttoreTema />
+        <InterruttoreTema etichetta={t.cambiaTema} />
       </div>
     </header>
   );

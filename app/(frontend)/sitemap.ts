@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
-import { articoliPerSitemap, CATEGORIE } from "@/lib/articoli";
-import { inLingua, percorsi } from "@/lib/lingue";
+import { articoliPerSitemap, CATEGORIE, percorsoCategoria } from "@/lib/articoli";
+import { percorsi } from "@/lib/lingue";
 import { baseSito, urlArticolo } from "@/lib/sito";
 
 /**
@@ -21,7 +21,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     { url: url(p.home), changeFrequency: "daily", priority: 1 },
     ...CATEGORIE.map((categoria) => ({
-      url: url(`/${inLingua(categoria.percorso, "it")}`),
+      url: url(percorsoCategoria(categoria.chiave, "it")),
       changeFrequency: "weekly" as const,
       priority: 0.8,
     })),

@@ -6,20 +6,20 @@ import {
   inLingua,
   LINGUA_PREDEFINITA,
   type Lingua,
-  type PerLingua,
 } from "@/lib/lingue";
+import { CATEGORIE, type Categoria } from "@/lib/sezioni";
 import type {
   Articoli as ArticoloDoc,
   Autori as AutoreDoc,
   Media as MediaDoc,
 } from "@/payload-types";
 
-export type Categoria =
-  | "approfondimenti"
-  | "recensioni"
-  | "consigli"
-  | "riflessioni"
-  | "classifiche";
+export {
+  CATEGORIE,
+  categoriaDaPercorso,
+  percorsoCategoria,
+  type Categoria,
+} from "@/lib/sezioni";
 
 export type Immagine = {
   url: string;
@@ -50,60 +50,6 @@ export type Articolo = {
   copertina: Immagine | null;
   autore: Autore | null;
 };
-
-/**
- * Chiave, nome e indirizzo restano qui: un nome o un indirizzo cambiato dal
- * pannello non deve poter rompere il menu. La chiave e' il valore salvato
- * negli articoli e non cambia con la lingua; nome e percorso si'. Le
- * descrizioni invece stanno nel global "categorie": vedi descrizioneCategoria.
- */
-export const CATEGORIE: {
-  chiave: Categoria;
-  nome: PerLingua<string>;
-  percorso: PerLingua<string>;
-}[] = [
-  {
-    chiave: "approfondimenti",
-    nome: { it: "Approfondimenti" },
-    percorso: { it: "approfondimenti" },
-  },
-  {
-    chiave: "recensioni",
-    nome: { it: "Recensioni" },
-    percorso: { it: "recensioni" },
-  },
-  {
-    chiave: "consigli",
-    nome: { it: "Notizie" },
-    percorso: { it: "consigli" },
-  },
-  {
-    chiave: "riflessioni",
-    nome: { it: "Riflessioni" },
-    percorso: { it: "riflessioni" },
-  },
-  {
-    chiave: "classifiche",
-    nome: { it: "Classifiche" },
-    percorso: { it: "classifiche" },
-  },
-];
-
-/** La sezione che risponde a un indirizzo, in quella lingua. */
-export function categoriaDaPercorso(
-  percorso: string,
-  lingua: Lingua = LINGUA_PREDEFINITA
-) {
-  return CATEGORIE.find((c) => c.percorso[lingua] === percorso);
-}
-
-export function percorsoCategoria(
-  categoria: Categoria,
-  lingua: Lingua = LINGUA_PREDEFINITA
-): string {
-  const info = CATEGORIE.find((c) => c.chiave === categoria);
-  return info ? `/${inLingua(info.percorso, lingua)}` : `/${categoria}`;
-}
 
 async function ottieniPayload() {
   const resolvedConfig = await config;

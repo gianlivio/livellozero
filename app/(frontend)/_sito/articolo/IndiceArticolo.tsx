@@ -2,21 +2,21 @@
 
 import { useEffect, useState } from "react";
 import type { VoceIndice } from "@/lib/indice";
-import { LINGUA_PREDEFINITA, type Lingua } from "@/lib/lingue";
-import { testi } from "@/lib/testi";
 
 /** Quanto sotto il bordo alto della finestra un titolo conta come "raggiunto".
     Poco piu' della testata appiccicata, cosi' non si attiva mentre e' coperto. */
 const SOGLIA = 140;
 
+/** Intestazione ed etichetta arrivano dal server gia' tradotte. */
 export default function IndiceArticolo({
   voci,
-  lingua = LINGUA_PREDEFINITA,
+  intestazione,
+  etichetta,
 }: {
   voci: VoceIndice[];
-  lingua?: Lingua;
+  intestazione: string;
+  etichetta: string;
 }) {
-  const t = testi(lingua);
   const [corrente, setCorrente] = useState("");
 
   useEffect(() => {
@@ -43,9 +43,9 @@ export default function IndiceArticolo({
   }, [voci]);
 
   return (
-    <nav className="articolo-indice" aria-label={t.indiceEtichetta}>
+    <nav className="articolo-indice" aria-label={etichetta}>
       <div className="articolo-indice-interna">
-        <p className="colonna-etichetta">{t.indice}</p>
+        <p className="colonna-etichetta">{intestazione}</p>
         {/* Un articolo senza h2 tiene lo stesso la colonna: resta
             l'intestazione da sola, senza un elenco vuoto sotto. */}
         {voci.length > 0 && (

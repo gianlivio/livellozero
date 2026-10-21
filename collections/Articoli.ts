@@ -1,6 +1,10 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, PayloadRequest } from 'payload'
 import { revalidatePath } from 'next/cache'
 import { editorTesto } from '../editor'
+import { percorsoArticolo, type Lingua } from '../lib/lingue'
+import { percorsoCategoria, type Categoria } from '../lib/sezioni'
+
+const LINGUE: Lingua[] = ['it', 'en']
 
 function generaSlug(testo: string): string {
   return testo
@@ -14,20 +18,56 @@ function generaSlug(testo: string): string {
     .replace(/^-|-$/g, '')
 }
 
-function rivalidaPercorsi(doc: { categoria?: unknown; slug?: unknown } | null | undefined) {
-  if (!doc) return
-  try {
-    console.log('[rivalida] percorso', '/')
-    revalidatePath('/')
-    console.log('[rivalida] percorso', '/sitemap.xml')
-    revalidatePath('/sitemap.xml')
-    if (typeof doc.categoria === 'string') {
-      console.log('[rivalida] percorso', `/${doc.categoria}`)
-      revalidatePath(`/${doc.categoria}`)
+type SlugPerLingua = Partial<Record<Lingua, string | null>>
+
+/** Lo slug dell'articolo in ogni lingua che ne ha uno. */
+async function slugPerLingua(
+  id: number | string,
+  req: PayloadRequest,
+): Promise<SlugPerLingua> {
+  const tutte = await req.payload.findByID({
+    collection: 'articoli',
+    id,
+    locale: 'all',
+    depth: 0,
+    req,
+  })
+  // Con locale 'all' i campi localizzati arrivano come { it, en }: il tipo
+  // generato non lo sa, perche' descrive la lettura in una lingua sola.
+  return (tutte.slug ?? {}) as unknown as SlugPerLingua
+}
+
+/**
+ * Le pagine che mostrano un articolo, in tutte le lingue: le due home, la
+ * sitemap, la sezione e la pagina dell'articolo. Una lingua senza slug non ha
+ * la pagina dell'articolo, quindi non c'e' niente da rigenerare.
+ */
+function rivalidaPercorsi({
+  categorie,
+  slug,
+}: {
+  categorie: unknown[]
+  slug: SlugPerLingua[]
+}) {
+  const percorsi = new Set(['/', '/en', '/sitemap.xml'])
+  for (const categoria of categorie) {
+    if (typeof categoria !== 'string') continue
+    for (const lingua of LINGUE) {
+      percorsi.add(percorsoCategoria(categoria as Categoria, lingua))
     }
-    if (typeof doc.slug === 'string') {
-      console.log('[rivalida] percorso', `/articoli/${doc.slug}`)
-      revalidatePath(`/articoli/${doc.slug}`)
+  }
+  for (const perLingua of slug) {
+    for (const lingua of LINGUE) {
+      const valore = perLingua[lingua]
+      if (typeof valore === 'string' && valore) {
+        percorsi.add(percorsoArticolo(valore, lingua))
+      }
+    }
+  }
+  try {
+    for (const percorso of percorsi) {
+      console.log('[rivalida] percorso', percorso)
+      revalidatePath(percorso)
     }
   } catch (errore) {
     // Payload gira fuori da un contesto Next (es. CLI/migrazioni): niente da rigenerare
@@ -58,21 +98,33 @@ export const Articoli: CollectionConfig = {
     defaultColumns: ['titolo', 'categoria', 'dataPubblicazione', '_status'],
   },
   hooks: {
+    // doc e previousDoc arrivano nella lingua che si sta salvando: gli slug
+    // delle altre lingue si leggono dall'articolo intero. Lo slug vecchio
+    // serve solo per la lingua salvata, perche' le altre non cambiano.
     afterChange: [
-      ({ doc, previousDoc }) => {
-        rivalidaPercorsi(doc)
-        if (
-          previousDoc &&
-          (previousDoc.categoria !== doc.categoria ||
-            previousDoc.slug !== doc.slug)
-        ) {
-          rivalidaPercorsi(previousDoc)
-        }
+      async ({ doc, previousDoc, req }) => {
+        const lingua = req.locale as Lingua
+        rivalidaPercorsi({
+          categorie: [doc.categoria, previousDoc?.categoria],
+          slug: [
+            await slugPerLingua(doc.id, req),
+            { [lingua]: previousDoc?.slug },
+          ],
+        })
+      },
+    ],
+    // Dopo la cancellazione l'articolo non c'e' piu': gli slug si leggono prima.
+    beforeDelete: [
+      async ({ id, req }) => {
+        req.context.slugDaRigenerare = await slugPerLingua(id, req)
       },
     ],
     afterDelete: [
-      ({ doc }) => {
-        rivalidaPercorsi(doc)
+      ({ doc, req }) => {
+        rivalidaPercorsi({
+          categorie: [doc.categoria],
+          slug: [(req.context.slugDaRigenerare ?? {}) as SlugPerLingua],
+        })
       },
     ],
   },

@@ -1,14 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
-import { LINGUA_PREDEFINITA, type Lingua } from "@/lib/lingue";
-import { testi } from "@/lib/testi";
 
-export default function InterruttoreTema({
-  lingua = LINGUA_PREDEFINITA,
-}: {
-  lingua?: Lingua;
-}) {
+/** L'etichetta arriva dal server gia' nella lingua della pagina: il
+ *  dizionario non viaggia fino al browser. */
+export default function InterruttoreTema({ etichetta }: { etichetta: string }) {
   useEffect(() => {
     const salvato = localStorage.getItem("tema");
     if (salvato === "chiaro" || salvato === "scuro") {
@@ -29,7 +25,7 @@ export default function InterruttoreTema({
       type="button"
       className="interruttore-tema"
       onClick={cambia}
-      aria-label={testi(lingua).cambiaTema}
+      aria-label={etichetta}
     >
       ◐
     </button>

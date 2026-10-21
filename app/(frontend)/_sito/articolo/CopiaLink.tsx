@@ -1,18 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LINGUA_PREDEFINITA, type Lingua } from "@/lib/lingue";
-import { testi } from "@/lib/testi";
 import { IconaFatto, IconaLink } from "./icone";
 
+/** Le etichette arrivano dal server gia' tradotte. */
 export default function CopiaLink({
   url,
-  lingua = LINGUA_PREDEFINITA,
+  etichette,
 }: {
   url: string;
-  lingua?: Lingua;
+  etichette: { copia: string; copiato: string };
 }) {
-  const t = testi(lingua);
   const [copiato, setCopiato] = useState(false);
 
   useEffect(() => {
@@ -34,7 +32,7 @@ export default function CopiaLink({
   return (
     <button type="button" className="condivisione-voce" onClick={copia}>
       {copiato ? <IconaFatto /> : <IconaLink />}
-      <span>{copiato ? t.copiato : t.copiaLink}</span>
+      <span>{copiato ? etichette.copiato : etichette.copia}</span>
     </button>
   );
 }

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -11,6 +12,19 @@ import { baseSito } from "@/lib/sito";
 import { testi } from "@/lib/testi";
 import Paginazione from "./Paginazione";
 import Pezzo from "./Pezzo";
+
+/**
+ * In una lingua diversa dall'italiano una pagina senza contenuto resta
+ * raggiungibile ma fuori dai motori di ricerca. In italiano no: e' il sito
+ * principale, e una sezione momentaneamente vuota non va tolta da Google.
+ */
+export async function metadatiHome(lingua: Lingua): Promise<Metadata> {
+  if (lingua === "it") return {};
+  const elenco = await elencoArticoli(1, lingua);
+  return elenco.articoli.length === 0
+    ? { robots: { index: false, follow: true } }
+    : {};
+}
 
 /** La home in una lingua. La rotta le passa il numero di pagina gia' letto. */
 export default async function PaginaHome({
@@ -140,7 +154,7 @@ export default async function PaginaHome({
           </div>
         )}
         <div className="autore-testo">
-          <h2>{chiSono.titolo}</h2>
+          <h2>{chiSono.titolo || t.chiSono}</h2>
           {paragrafo && <p>{paragrafo}</p>}
           <div className="autore-link">
             {chiSono.instagram && (

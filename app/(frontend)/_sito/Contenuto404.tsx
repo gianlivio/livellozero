@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CATEGORIE } from "@/lib/articoli";
+import { CATEGORIE, percorsoCategoria } from "@/lib/articoli";
 import { inLingua, LINGUA_PREDEFINITA, type Lingua } from "@/lib/lingue";
 import { testi } from "@/lib/testi";
 import CampoRicerca from "./CampoRicerca";
@@ -22,7 +22,7 @@ export default function Contenuto404({
       <nav className="pagina-404-categorie" aria-label={t.categorie}>
         {CATEGORIE.map((categoria) => (
           <Link
-            href={`/${inLingua(categoria.percorso, lingua)}`}
+            href={percorsoCategoria(categoria.chiave, lingua)}
             key={categoria.chiave}
           >
             {inLingua(categoria.nome, lingua)}

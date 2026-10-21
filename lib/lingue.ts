@@ -1,6 +1,6 @@
 /**
- * Le lingue del sito. Per ora esiste solo l'italiano: l'inglese e' nel tipo
- * per preparare il terreno, ma nessun testo o percorso inglese c'e' ancora.
+ * Le lingue del sito. L'italiano e' la lingua predefinita e sta senza
+ * prefisso; l'inglese sta sotto /en, con indirizzi tradotti.
  */
 export type Lingua = "it" | "en";
 
@@ -22,7 +22,7 @@ export function inLingua<T>(valori: PerLingua<T>, lingua: Lingua): T {
 }
 
 /** Come si scrivono le date in ciascuna lingua (Intl). */
-const FORMATO_DATE: PerLingua<string> = { it: "it-IT" };
+const FORMATO_DATE: PerLingua<string> = { it: "it-IT", en: "en-US" };
 
 export function formatoDate(lingua: Lingua): string {
   return inLingua(FORMATO_DATE, lingua);
@@ -42,6 +42,13 @@ const PERCORSI: PerLingua<{
     cerca: "/cerca",
     chiSono: "/chi-sono",
     progetto: "/progetto",
+  },
+  en: {
+    home: "/en",
+    articoli: "/en/articles",
+    cerca: "/en/search",
+    chiSono: "/en/about",
+    progetto: "/en/project",
   },
 };
 

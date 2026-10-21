@@ -56,7 +56,10 @@ export default function Condivisione({
             <span>{destinazione.nome}</span>
           </a>
         ))}
-        <CopiaLink url={url} />
+        <CopiaLink
+          url={url}
+          etichette={{ copia: t.copiaLink, copiato: t.copiato }}
+        />
       </div>
     </aside>
   );

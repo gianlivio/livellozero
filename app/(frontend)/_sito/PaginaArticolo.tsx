@@ -193,7 +193,11 @@ export default async function PaginaArticolo({
         }}
       />
       <BarraLettura />
-      <IndiceArticolo voci={voci} />
+      <IndiceArticolo
+        voci={voci}
+        intestazione={t.indice}
+        etichetta={t.indiceEtichetta}
+      />
       {altri.length > 0 && (
         <ArticoliCorrelati articoli={altri} lingua={lingua} />
       )}

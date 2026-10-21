@@ -8,11 +8,14 @@ import { haTesto, immagineDa, leggiChiSono } from "@/lib/pagine";
 import { baseSito } from "@/lib/sito";
 import { testi } from "@/lib/testi";
 
-export function metadatiChiSono(lingua: Lingua): Metadata {
+/** Senza testo in quella lingua la pagina non va sui motori di ricerca. */
+export async function metadatiChiSono(lingua: Lingua): Promise<Metadata> {
   const t = testi(lingua);
+  const pagina = await leggiChiSono(lingua);
   return {
     title: t.titoloPagina(t.chiSono),
     description: t.chiSonoDescrizione,
+    ...(!haTesto(pagina.testo) && { robots: { index: false, follow: true } }),
   };
 }
 
@@ -73,8 +76,12 @@ export default async function PaginaChiSono({ lingua }: { lingua: Lingua }) {
         </div>
       )}
       <div>
-        <h1>{pagina.titolo}</h1>
-        {haTesto(pagina.testo) && <RichText data={pagina.testo!} />}
+        <h1>{pagina.titolo || t.chiSono}</h1>
+        {haTesto(pagina.testo) ? (
+          <RichText data={pagina.testo!} />
+        ) : (
+          <p>{t.paginaVuota}</p>
+        )}
         {(pagina.instagram || pagina.email) && (
           <div className="chi-sono-contatti">
             {pagina.instagram && (

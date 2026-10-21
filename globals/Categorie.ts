@@ -1,9 +1,10 @@
 import type { GlobalConfig } from 'payload'
 import { revalidatePath } from 'next/cache'
+import { CATEGORIE, percorsoCategoria } from '../lib/sezioni'
 
 /**
  * Le chiavi sono le stesse di collections/Articoli.ts e di CATEGORIE in
- * lib/articoli.ts. Qui non si aggiungono ne' tolgono categorie: le cinque
+ * lib/sezioni.ts. Qui non si aggiungono ne' tolgono categorie: le cinque
  * righe nascono nella migrazione e dal pannello si cambia solo il testo.
  */
 const opzioni = [
@@ -16,8 +17,9 @@ const opzioni = [
 
 function rivalidaCategorie() {
   try {
-    for (const { value } of opzioni) {
-      revalidatePath(`/${value}`)
+    for (const { chiave } of CATEGORIE) {
+      revalidatePath(percorsoCategoria(chiave, 'it'))
+      revalidatePath(percorsoCategoria(chiave, 'en'))
     }
   } catch {
     // Payload gira fuori da un contesto Next (es. CLI/migrazioni): niente da rigenerare
