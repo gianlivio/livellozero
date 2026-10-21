@@ -10,8 +10,8 @@ import "./globals.css";
 
 /**
  * La cornice del sito — font, testata, piede — sta qui e non nel layout
- * perche' serve a due radici diverse: il layout di (frontend) e la
- * global-not-found, che per forza di cose il layout non ce l'ha.
+ * perche' serve a piu' radici: il layout di (it) e la global-not-found, che
+ * per forza di cose il layout non ce l'ha.
  */
 
 const archivo = Archivo({

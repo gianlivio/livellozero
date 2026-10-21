@@ -1,0 +1,31 @@
+import type { Metadata } from "next";
+import { paginaRichiesta } from "@/lib/articoli";
+import PaginaCategoria, {
+  metadatiCategoria,
+  parametriCategorie,
+} from "../../_sito/PaginaCategoria";
+
+export const revalidate = 3600;
+
+export function generateStaticParams() {
+  return parametriCategorie("it");
+}
+
+export async function generateMetadata(
+  props: PageProps<"/[categoria]">
+): Promise<Metadata> {
+  const { categoria } = await props.params;
+  return metadatiCategoria(categoria, "it");
+}
+
+export default async function Categoria(props: PageProps<"/[categoria]">) {
+  const { categoria } = await props.params;
+  const parametri = await props.searchParams;
+  return (
+    <PaginaCategoria
+      lingua="it"
+      percorso={categoria}
+      pagina={paginaRichiesta(parametri.pagina)}
+    />
+  );
+}

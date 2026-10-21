@@ -1,15 +1,19 @@
 import type { Metadata } from "next";
 import { RichText } from "@payloadcms/richtext-lexical/react";
+import type { Lingua } from "@/lib/lingue";
 import { haTesto, leggiProgetto } from "@/lib/pagine";
 import { testi } from "@/lib/testi";
 
-export const metadata: Metadata = {
-  title: testi().titoloPagina(testi().progettoTitolo),
-  description: testi().progettoDescrizione,
-};
+export function metadatiProgetto(lingua: Lingua): Metadata {
+  const t = testi(lingua);
+  return {
+    title: t.titoloPagina(t.progettoTitolo),
+    description: t.progettoDescrizione,
+  };
+}
 
-export default async function ProgettoPagina() {
-  const t = testi();
+export default async function PaginaProgetto({ lingua }: { lingua: Lingua }) {
+  const t = testi(lingua);
   const pagina = await leggiProgetto();
 
   return (

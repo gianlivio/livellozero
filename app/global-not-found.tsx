@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { baseSito } from "@/lib/sito";
 import { testi } from "@/lib/testi";
-import Contenuto404 from "./(frontend)/Contenuto404";
-import { classiFont, Piede, scriptTema, Testata } from "./(frontend)/Cornice";
+import Contenuto404 from "./(frontend)/_sito/Contenuto404";
+import { classiFont, Piede, scriptTema, Testata } from "./(frontend)/_sito/Cornice";
 
 /**
  * Il sito ha due radici — (frontend) e (payload) — e con due layout di radice

@@ -3,23 +3,26 @@ import Link from "next/link";
 import {
   elencoArticoli,
   nomeCategoria,
-  paginaRichiesta,
   percorsoCategoria,
 } from "@/lib/articoli";
-import { percorsi, percorsoArticolo } from "@/lib/lingue";
+import { percorsi, percorsoArticolo, type Lingua } from "@/lib/lingue";
 import { immagineDa, leggiChiSono, primoParagrafo } from "@/lib/pagine";
 import { baseSito } from "@/lib/sito";
 import { testi } from "@/lib/testi";
 import Paginazione from "./Paginazione";
 import Pezzo from "./Pezzo";
 
-export const revalidate = 3600;
-
-export default async function Home(props: PageProps<"/">) {
-  const t = testi();
-  const p = percorsi();
-  const parametri = await props.searchParams;
-  const elenco = await elencoArticoli(paginaRichiesta(parametri.pagina));
+/** La home in una lingua. La rotta le passa il numero di pagina gia' letto. */
+export default async function PaginaHome({
+  lingua,
+  pagina,
+}: {
+  lingua: Lingua;
+  pagina: number;
+}) {
+  const t = testi(lingua);
+  const p = percorsi(lingua);
+  const elenco = await elencoArticoli(pagina, lingua);
   const chiSono = await leggiChiSono();
   const foto = immagineDa(chiSono.foto);
   const paragrafo = primoParagrafo(chiSono.testo);
@@ -61,13 +64,13 @@ export default async function Home(props: PageProps<"/">) {
         <section className="guscio apertura">
           <div className="apertura-testo">
             <Link
-              href={percorsoCategoria(apertura.categoria)}
+              href={percorsoCategoria(apertura.categoria, lingua)}
               className="categoria"
             >
-              {nomeCategoria(apertura.categoria)}
+              {nomeCategoria(apertura.categoria, lingua)}
             </Link>
             <h1>
-              <Link href={percorsoArticolo(apertura.slug)}>
+              <Link href={percorsoArticolo(apertura.slug, lingua)}>
                 {apertura.titolo}
               </Link>
             </h1>
@@ -114,12 +117,12 @@ export default async function Home(props: PageProps<"/">) {
               </h2>
               <div className="elenco-pezzi">
                 {pezzi.map((articolo) => (
-                  <Pezzo articolo={articolo} key={articolo.slug} />
+                  <Pezzo articolo={articolo} lingua={lingua} key={articolo.slug} />
                 ))}
               </div>
             </>
           )}
-          <Paginazione elenco={elenco} base={p.home} />
+          <Paginazione elenco={elenco} base={p.home} lingua={lingua} />
         </section>
       )}
 

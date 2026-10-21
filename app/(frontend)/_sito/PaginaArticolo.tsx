@@ -15,13 +15,13 @@ import {
   tuttiGliArticoli,
 } from "@/lib/articoli";
 import { ancoraTitolo, titoliArticolo } from "@/lib/indice";
-import { percorsi } from "@/lib/lingue";
+import { percorsi, type Lingua } from "@/lib/lingue";
 import { baseSito, urlArticolo } from "@/lib/sito";
 import { testi } from "@/lib/testi";
-import ArticoliCorrelati from "./ArticoliCorrelati";
-import BarraLettura from "./BarraLettura";
-import Condivisione from "./Condivisione";
-import IndiceArticolo from "./IndiceArticolo";
+import ArticoliCorrelati from "./articolo/ArticoliCorrelati";
+import BarraLettura from "./articolo/BarraLettura";
+import Condivisione from "./articolo/Condivisione";
+import IndiceArticolo from "./articolo/IndiceArticolo";
 
 const convertitori: JSXConvertersFunction = ({ defaultConverters }) => ({
   ...defaultConverters,
@@ -68,20 +68,22 @@ const convertitori: JSXConvertersFunction = ({ defaultConverters }) => ({
   },
 });
 
-export async function generateStaticParams() {
-  const articoli = await tuttiGliArticoli();
+/** Gli slug degli articoli pubblicati in una lingua, per generateStaticParams. */
+export async function parametriArticoli(lingua: Lingua) {
+  const articoli = await tuttiGliArticoli(lingua);
   return articoli.map((articolo) => ({ slug: articolo.slug }));
 }
 
-export async function generateMetadata(
-  props: PageProps<"/articoli/[slug]">
+export async function metadatiArticolo(
+  slug: string,
+  lingua: Lingua
 ): Promise<Metadata> {
-  const { slug } = await props.params;
-  const articolo = await articoloPerSlug(slug);
+  const articolo = await articoloPerSlug(slug, lingua);
   if (!articolo) notFound();
 
   const titolo =
-    articolo.titoloGoogle?.trim() || testi().titoloPagina(articolo.titolo);
+    articolo.titoloGoogle?.trim() ||
+    testi(lingua).titoloPagina(articolo.titolo);
   const descrizione = articolo.descrizioneGoogle?.trim() || articolo.sommario;
 
   return {
@@ -104,18 +106,21 @@ export async function generateMetadata(
   };
 }
 
-export default async function PaginaArticolo(
-  props: PageProps<"/articoli/[slug]">
-) {
-  const { slug } = await props.params;
-  const articolo = await articoloPerSlug(slug);
+export default async function PaginaArticolo({
+  lingua,
+  slug,
+}: {
+  lingua: Lingua;
+  slug: string;
+}) {
+  const articolo = await articoloPerSlug(slug, lingua);
   if (!articolo) notFound();
 
-  const t = testi();
-  const p = percorsi();
-  const altri = await articoliCorrelati(articolo, 4);
+  const t = testi(lingua);
+  const p = percorsi(lingua);
+  const altri = await articoliCorrelati(articolo, 4, lingua);
   const voci = titoliArticolo(articolo.corpo);
-  const url = urlArticolo(articolo.slug);
+  const url = urlArticolo(articolo.slug, lingua);
 
   // Dati strutturati per Google. Niente dateModified: Articolo non ha un
   // campo di aggiornamento.
@@ -158,8 +163,11 @@ export default async function PaginaArticolo(
       {
         "@type": "ListItem",
         position: 2,
-        name: nomeCategoria(articolo.categoria),
-        item: new URL(percorsoCategoria(articolo.categoria), baseSito).toString(),
+        name: nomeCategoria(articolo.categoria, lingua),
+        item: new URL(
+          percorsoCategoria(articolo.categoria, lingua),
+          baseSito
+        ).toString(),
       },
       {
         "@type": "ListItem",
@@ -186,9 +194,14 @@ export default async function PaginaArticolo(
       />
       <BarraLettura />
       <IndiceArticolo voci={voci} />
-      {altri.length > 0 && <ArticoliCorrelati articoli={altri} />}
-      <Link href={percorsoCategoria(articolo.categoria)} className="categoria">
-        {nomeCategoria(articolo.categoria)}
+      {altri.length > 0 && (
+        <ArticoliCorrelati articoli={altri} lingua={lingua} />
+      )}
+      <Link
+        href={percorsoCategoria(articolo.categoria, lingua)}
+        className="categoria"
+      >
+        {nomeCategoria(articolo.categoria, lingua)}
       </Link>
       {articolo.copertina && (
         <div className="articolo-immagine">
@@ -209,7 +222,7 @@ export default async function PaginaArticolo(
         <p className="articolo-autore">{t.firma(articolo.autore.nome)}</p>
       )}
       <p className="articolo-meta">
-        {t.metaArticolo(dataLeggibile(articolo.data), articolo.minuti)}
+        {t.metaArticolo(dataLeggibile(articolo.data, lingua), articolo.minuti)}
       </p>
       <RichText
         className="articolo-corpo"
@@ -217,7 +230,7 @@ export default async function PaginaArticolo(
         converters={convertitori}
       />
 
-      <Condivisione url={url} titolo={articolo.titolo} />
+      <Condivisione url={url} titolo={articolo.titolo} lingua={lingua} />
 
       {articolo.autore && (
         <aside className="articolo-firma">
