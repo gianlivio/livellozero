@@ -37,6 +37,7 @@ export type Articolo = {
   descrizioneGoogle: string | null;
   categoria: Categoria;
   data: string;
+  dataISO: string;
   minuti: number;
   corpo: ArticoloDoc["corpo"];
   copertina: Immagine | null;
@@ -108,6 +109,7 @@ function mappaArticolo(doc: ArticoloDoc): Articolo {
     descrizioneGoogle: doc.descrizioneGoogle ?? null,
     categoria: doc.categoria,
     data: doc.dataPubblicazione.slice(0, 10),
+    dataISO: doc.dataPubblicazione,
     minuti: doc.minuti ?? 0,
     corpo: doc.corpo,
     copertina: mappaImmagine(doc.copertina),

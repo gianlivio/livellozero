@@ -122,9 +122,15 @@ export default async function PaginaArticolo(
     ...(articolo.copertina
       ? { image: new URL(articolo.copertina.url, baseSito).toString() }
       : {}),
-    datePublished: articolo.data,
+    datePublished: articolo.dataISO,
     ...(articolo.autore
-      ? { author: { "@type": "Person", name: articolo.autore.nome } }
+      ? {
+          author: {
+            "@type": "Person",
+            name: articolo.autore.nome,
+            url: new URL("/chi-sono", baseSito).toString(),
+          },
+        }
       : {}),
     publisher: {
       "@type": "Organization",
@@ -134,12 +140,43 @@ export default async function PaginaArticolo(
     mainEntityOfPage: url,
   };
 
+  const briciole = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: new URL("/", baseSito).toString(),
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: nomeCategoria(articolo.categoria),
+        item: new URL(`/${articolo.categoria}`, baseSito).toString(),
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: articolo.titolo,
+        item: url,
+      },
+    ],
+  };
+
   return (
     <article className="pagina-articolo">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(datiStrutturati).replace(/</g, "\\u003c"),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(briciole).replace(/</g, "\\u003c"),
         }}
       />
       <BarraLettura />

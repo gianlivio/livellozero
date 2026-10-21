@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { RichText } from "@payloadcms/richtext-lexical/react";
+import { getPayload } from "payload";
+import config from "@/payload.config";
 import { haTesto, immagineDa, leggiChiSono } from "@/lib/pagine";
+import { baseSito } from "@/lib/sito";
 
 export const metadata: Metadata = {
   title: "Chi sono — Livello Zero",
@@ -13,8 +16,43 @@ export default async function ChiSonoPagina() {
   const pagina = await leggiChiSono();
   const foto = immagineDa(pagina.foto);
 
+  // Per i dati strutturati: il global non ha il nome di chi scrive, l'autore
+  // si'. Oggi ce n'e' uno solo; se diventassero di piu', vale il primo creato.
+  const payload = await getPayload({ config: await config });
+  const autore = (
+    await payload.find({
+      collection: "autori",
+      sort: "createdAt",
+      depth: 1,
+      limit: 1,
+    })
+  ).docs[0];
+  const fotoAutore = autore ? immagineDa(autore.foto) : null;
+
+  const datiStrutturati = autore && {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    url: new URL("/chi-sono", baseSito).toString(),
+    mainEntity: {
+      "@type": "Person",
+      name: autore.nome,
+      ...(fotoAutore
+        ? { image: new URL(fotoAutore.url!, baseSito).toString() }
+        : {}),
+      ...(autore.bio ? { description: autore.bio } : {}),
+    },
+  };
+
   return (
     <section className="guscio pagina-chi-sono">
+      {datiStrutturati && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(datiStrutturati).replace(/</g, "\\u003c"),
+          }}
+        />
+      )}
       {foto && (
         <div className="chi-sono-foto">
           <Image

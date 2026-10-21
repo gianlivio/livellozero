@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { elencoArticoli, nomeCategoria, paginaRichiesta } from "@/lib/articoli";
 import { immagineDa, leggiChiSono, primoParagrafo } from "@/lib/pagine";
+import { baseSito } from "@/lib/sito";
 import Paginazione from "./Paginazione";
 import Pezzo from "./Pezzo";
 
@@ -19,8 +20,34 @@ export default async function Home(props: PageProps<"/">) {
   const apertura = elenco.pagina === 1 ? elenco.articoli[0] : undefined;
   const pezzi = apertura ? elenco.articoli.slice(1) : elenco.articoli;
 
+  const urlHome = new URL("/", baseSito).toString();
+  const datiStrutturati = [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "Livello Zero",
+      url: urlHome,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: "Livello Zero",
+      url: urlHome,
+      logo: new URL("/logo.png", baseSito).toString(),
+    },
+  ];
+
   return (
     <>
+      {datiStrutturati.map((dati) => (
+        <script
+          key={dati["@type"]}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(dati).replace(/</g, "\\u003c"),
+          }}
+        />
+      ))}
       {apertura ? (
         <section className="guscio apertura">
           <div className="apertura-testo">
