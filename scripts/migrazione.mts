@@ -2,10 +2,11 @@ import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import payload from 'payload'
 import type { SanitizedConfig } from 'payload'
-import { caricaEnv } from './env.mts'
+import { caricaEnv, mostraDatabase } from './env.mts'
 
 const radice = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 caricaEnv(radice)
+mostraDatabase()
 
 const nomeMigrazione = process.argv[2]
 if (!nomeMigrazione) {
