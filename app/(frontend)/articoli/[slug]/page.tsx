@@ -77,12 +77,16 @@ export async function generateMetadata(
   const articolo = await articoloPerSlug(slug);
   if (!articolo) notFound();
 
+  const titolo =
+    articolo.titoloGoogle?.trim() || `${articolo.titolo} — Livello Zero`;
+  const descrizione = articolo.descrizioneGoogle?.trim() || articolo.sommario;
+
   return {
-    title: `${articolo.titolo} — Livello Zero`,
-    description: articolo.sommario,
+    title: titolo,
+    description: descrizione,
     openGraph: {
-      title: `${articolo.titolo} — Livello Zero`,
-      description: articolo.sommario,
+      title: titolo,
+      description: descrizione,
       ...(articolo.copertina
         ? {
             images: [

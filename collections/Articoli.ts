@@ -135,6 +135,26 @@ export const Articoli: CollectionConfig = {
       },
     },
     {
+      name: 'titoloGoogle',
+      type: 'text',
+      maxLength: 60,
+      label: 'Titolo per Google',
+      admin: {
+        description:
+          'Facoltativo, massimo 60 caratteri, usato così com\'è. Se vuoto, Google mostra il Titolo seguito da " — Livello Zero".',
+      },
+    },
+    {
+      name: 'descrizioneGoogle',
+      type: 'textarea',
+      maxLength: 160,
+      label: 'Descrizione per Google',
+      admin: {
+        description:
+          'Facoltativa, ideale tra 140 e 155 caratteri. Se vuota, Google mostra il Sommario.',
+      },
+    },
+    {
       name: 'copertina',
       type: 'upload',
       relationTo: 'media',

@@ -244,6 +244,14 @@ export interface Articoli {
    * Due righe che compaiono in home e su Google.
    */
   sommario: string;
+  /**
+   * Facoltativo, massimo 60 caratteri, usato così com'è. Se vuoto, Google mostra il Titolo seguito da " — Livello Zero".
+   */
+  titoloGoogle?: string | null;
+  /**
+   * Facoltativa, ideale tra 140 e 155 caratteri. Se vuota, Google mostra il Sommario.
+   */
+  descrizioneGoogle?: string | null;
   copertina: number | Media;
   corpo: {
     root: {
@@ -450,6 +458,8 @@ export interface ArticoliSelect<T extends boolean = true> {
   categoria?: T;
   autore?: T;
   sommario?: T;
+  titoloGoogle?: T;
+  descrizioneGoogle?: T;
   copertina?: T;
   corpo?: T;
   dataPubblicazione?: T;

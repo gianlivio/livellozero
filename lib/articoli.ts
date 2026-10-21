@@ -33,6 +33,8 @@ export type Articolo = {
   slug: string;
   titolo: string;
   sommario: string;
+  titoloGoogle: string | null;
+  descrizioneGoogle: string | null;
   categoria: Categoria;
   data: string;
   minuti: number;
@@ -102,6 +104,8 @@ function mappaArticolo(doc: ArticoloDoc): Articolo {
     slug: doc.slug,
     titolo: doc.titolo,
     sommario: doc.sommario,
+    titoloGoogle: doc.titoloGoogle ?? null,
+    descrizioneGoogle: doc.descrizioneGoogle ?? null,
     categoria: doc.categoria,
     data: doc.dataPubblicazione.slice(0, 10),
     minuti: doc.minuti ?? 0,
