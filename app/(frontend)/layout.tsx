@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { baseSito } from "@/lib/sito";
+import { testi } from "@/lib/testi";
 import { classiFont, Piede, scriptTema, Testata } from "./Cornice";
 
 export const metadata: Metadata = {
   metadataBase: baseSito,
-  title: "Livello Zero — come nascono i videogiochi",
-  description:
-    "Approfondimenti, recensioni e consigli sui videogiochi, con attenzione a come vengono progettati e realizzati.",
+  title: testi().titoloSito,
+  description: testi().descrizioneSito,
   robots: { "max-image-preview": "large" },
 };
 

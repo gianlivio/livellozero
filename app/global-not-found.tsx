@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { baseSito } from "@/lib/sito";
+import { testi } from "@/lib/testi";
 import Contenuto404 from "./(frontend)/Contenuto404";
 import { classiFont, Piede, scriptTema, Testata } from "./(frontend)/Cornice";
 
@@ -14,8 +15,8 @@ import { classiFont, Piede, scriptTema, Testata } from "./(frontend)/Cornice";
 
 export const metadata: Metadata = {
   metadataBase: baseSito,
-  title: "Questa pagina non esiste — Livello Zero",
-  description: "L'indirizzo che hai aperto non corrisponde a nessuna pagina.",
+  title: testi().titoloPagina(testi().nonEsiste),
+  description: testi().nonEsisteDescrizione,
 };
 
 export default function GlobalNotFound() {

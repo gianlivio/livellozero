@@ -1,14 +1,23 @@
 import Image from "next/image";
 import Link from "next/link";
-import { elencoArticoli, nomeCategoria, paginaRichiesta } from "@/lib/articoli";
+import {
+  elencoArticoli,
+  nomeCategoria,
+  paginaRichiesta,
+  percorsoCategoria,
+} from "@/lib/articoli";
+import { percorsi, percorsoArticolo } from "@/lib/lingue";
 import { immagineDa, leggiChiSono, primoParagrafo } from "@/lib/pagine";
 import { baseSito } from "@/lib/sito";
+import { testi } from "@/lib/testi";
 import Paginazione from "./Paginazione";
 import Pezzo from "./Pezzo";
 
 export const revalidate = 3600;
 
 export default async function Home(props: PageProps<"/">) {
+  const t = testi();
+  const p = percorsi();
   const parametri = await props.searchParams;
   const elenco = await elencoArticoli(paginaRichiesta(parametri.pagina));
   const chiSono = await leggiChiSono();
@@ -20,7 +29,7 @@ export default async function Home(props: PageProps<"/">) {
   const apertura = elenco.pagina === 1 ? elenco.articoli[0] : undefined;
   const pezzi = apertura ? elenco.articoli.slice(1) : elenco.articoli;
 
-  const urlHome = new URL("/", baseSito).toString();
+  const urlHome = new URL(p.home, baseSito).toString();
   const datiStrutturati = [
     {
       "@context": "https://schema.org",
@@ -51,18 +60,19 @@ export default async function Home(props: PageProps<"/">) {
       {apertura ? (
         <section className="guscio apertura">
           <div className="apertura-testo">
-            <Link href={`/${apertura.categoria}`} className="categoria">
+            <Link
+              href={percorsoCategoria(apertura.categoria)}
+              className="categoria"
+            >
               {nomeCategoria(apertura.categoria)}
             </Link>
             <h1>
-              <Link href={`/articoli/${apertura.slug}`}>
+              <Link href={percorsoArticolo(apertura.slug)}>
                 {apertura.titolo}
               </Link>
             </h1>
             <p className="sommario">{apertura.sommario}</p>
-            <p className="tempo-lettura">
-              Lettura da {apertura.minuti} minuti
-            </p>
+            <p className="tempo-lettura">{t.tempoLettura(apertura.minuti)}</p>
           </div>
           {apertura.copertina ? (
             <div className="apertura-immagine">
@@ -80,15 +90,15 @@ export default async function Home(props: PageProps<"/">) {
           ) : (
             <div
               className="blocco apertura-immagine"
-              data-eti="immagine di apertura"
+              data-eti={t.immagineApertura}
             />
           )}
         </section>
       ) : elenco.pagina === 1 ? (
         <section className="guscio sezione-in-arrivo">
-          <div className="blocco" data-eti="in arrivo" />
-          <h1>Il sito sta per partire</h1>
-          <p className="vuoto">I primi articoli arrivano a breve.</p>
+          <div className="blocco" data-eti={t.inArrivo} />
+          <h1>{t.sitoInPartenza}</h1>
+          <p className="vuoto">{t.primiArticoli}</p>
         </section>
       ) : null}
 
@@ -100,7 +110,7 @@ export default async function Home(props: PageProps<"/">) {
           {pezzi.length > 0 && (
             <>
               <h2>
-                {elenco.pagina === 1 ? "Ultimi articoli" : "Altri articoli"}
+                {elenco.pagina === 1 ? t.ultimiArticoli : t.altriArticoli}
               </h2>
               <div className="elenco-pezzi">
                 {pezzi.map((articolo) => (
@@ -109,7 +119,7 @@ export default async function Home(props: PageProps<"/">) {
               </div>
             </>
           )}
-          <Paginazione elenco={elenco} base="/" />
+          <Paginazione elenco={elenco} base={p.home} />
         </section>
       )}
 
@@ -136,13 +146,13 @@ export default async function Home(props: PageProps<"/">) {
                 rel="noreferrer"
                 target="_blank"
               >
-                Instagram
+                {t.instagram}
               </a>
             )}
             {chiSono.email && (
-              <a href={`mailto:${chiSono.email}`}>Scrivimi</a>
+              <a href={`mailto:${chiSono.email}`}>{t.scrivimi}</a>
             )}
-            <Link href="/progetto">Sostieni il progetto</Link>
+            <Link href={p.progetto}>{t.sostieni}</Link>
           </div>
         </div>
       </section>

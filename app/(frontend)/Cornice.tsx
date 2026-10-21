@@ -1,6 +1,8 @@
 import { Archivo, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import Link from "next/link";
 import { CATEGORIE } from "@/lib/articoli";
+import { inLingua, LINGUA_PREDEFINITA, percorsi, type Lingua } from "@/lib/lingue";
+import { testi } from "@/lib/testi";
 import CampoRicerca from "./CampoRicerca";
 import Marchio from "./Marchio";
 import InterruttoreTema from "./InterruttoreTema";
@@ -44,37 +46,48 @@ export const scriptTema = `(function () {
   } catch (e) {}
 })();`;
 
-export function Testata() {
+export function Testata({
+  lingua = LINGUA_PREDEFINITA,
+}: {
+  lingua?: Lingua;
+}) {
+  const t = testi(lingua);
+  const p = percorsi(lingua);
   return (
     <header className="testata">
       <div className="guscio testata-interna">
-        <Link href="/" className="marchio">
+        <Link href={p.home} className="marchio">
           <Marchio />
           <span className="marchio-nome">LIVELLO ZERO</span>
         </Link>
         <nav className="navigazione">
           {CATEGORIE.map((categoria) => (
-            <Link href={`/${categoria.chiave}`} key={categoria.chiave}>
-              {categoria.nome}
+            <Link
+              href={`/${inLingua(categoria.percorso, lingua)}`}
+              key={categoria.chiave}
+            >
+              {inLingua(categoria.nome, lingua)}
             </Link>
           ))}
-          <Link href="/chi-sono">Chi sono</Link>
+          <Link href={p.chiSono}>{t.chiSono}</Link>
         </nav>
-        <CampoRicerca />
+        <CampoRicerca lingua={lingua} />
         <InterruttoreTema />
       </div>
     </header>
   );
 }
 
-export function Piede() {
+export function Piede({ lingua = LINGUA_PREDEFINITA }: { lingua?: Lingua }) {
+  const t = testi(lingua);
+  const p = percorsi(lingua);
   return (
     <footer className="guscio piede">
-      <p>Livello Zero — progetto editoriale indipendente</p>
+      <p>{t.piede}</p>
       <div className="piede-link">
-        <Link href="/progetto">Progetto</Link>
-        <Link href="/chi-sono">Chi sono</Link>
-        <a href="#">Instagram</a>
+        <Link href={p.progetto}>{t.progetto}</Link>
+        <Link href={p.chiSono}>{t.chiSono}</Link>
+        <a href="#">{t.instagram}</a>
       </div>
     </footer>
   );

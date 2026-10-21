@@ -3,16 +3,18 @@ import Image from "next/image";
 import { RichText } from "@payloadcms/richtext-lexical/react";
 import { getPayload } from "payload";
 import config from "@/payload.config";
+import { percorsi } from "@/lib/lingue";
 import { haTesto, immagineDa, leggiChiSono } from "@/lib/pagine";
 import { baseSito } from "@/lib/sito";
+import { testi } from "@/lib/testi";
 
 export const metadata: Metadata = {
-  title: "Chi sono — Livello Zero",
-  description:
-    "Chi scrive Livello Zero e perché racconta come nascono i videogiochi.",
+  title: testi().titoloPagina(testi().chiSono),
+  description: testi().chiSonoDescrizione,
 };
 
 export default async function ChiSonoPagina() {
+  const t = testi();
   const pagina = await leggiChiSono();
   const foto = immagineDa(pagina.foto);
 
@@ -32,7 +34,7 @@ export default async function ChiSonoPagina() {
   const datiStrutturati = autore && {
     "@context": "https://schema.org",
     "@type": "ProfilePage",
-    url: new URL("/chi-sono", baseSito).toString(),
+    url: new URL(percorsi().chiSono, baseSito).toString(),
     mainEntity: {
       "@type": "Person",
       name: autore.nome,
@@ -76,10 +78,10 @@ export default async function ChiSonoPagina() {
                 rel="noreferrer"
                 target="_blank"
               >
-                Instagram
+                {t.instagram}
               </a>
             )}
-            {pagina.email && <a href={`mailto:${pagina.email}`}>Email</a>}
+            {pagina.email && <a href={`mailto:${pagina.email}`}>{t.email}</a>}
           </div>
         )}
       </div>

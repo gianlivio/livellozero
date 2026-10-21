@@ -11,10 +11,13 @@ import {
   articoloPerSlug,
   dataLeggibile,
   nomeCategoria,
+  percorsoCategoria,
   tuttiGliArticoli,
 } from "@/lib/articoli";
 import { ancoraTitolo, titoliArticolo } from "@/lib/indice";
+import { percorsi } from "@/lib/lingue";
 import { baseSito, urlArticolo } from "@/lib/sito";
+import { testi } from "@/lib/testi";
 import ArticoliCorrelati from "./ArticoliCorrelati";
 import BarraLettura from "./BarraLettura";
 import Condivisione from "./Condivisione";
@@ -78,7 +81,7 @@ export async function generateMetadata(
   if (!articolo) notFound();
 
   const titolo =
-    articolo.titoloGoogle?.trim() || `${articolo.titolo} — Livello Zero`;
+    articolo.titoloGoogle?.trim() || testi().titoloPagina(articolo.titolo);
   const descrizione = articolo.descrizioneGoogle?.trim() || articolo.sommario;
 
   return {
@@ -108,6 +111,8 @@ export default async function PaginaArticolo(
   const articolo = await articoloPerSlug(slug);
   if (!articolo) notFound();
 
+  const t = testi();
+  const p = percorsi();
   const altri = await articoliCorrelati(articolo, 4);
   const voci = titoliArticolo(articolo.corpo);
   const url = urlArticolo(articolo.slug);
@@ -128,7 +133,7 @@ export default async function PaginaArticolo(
           author: {
             "@type": "Person",
             name: articolo.autore.nome,
-            url: new URL("/chi-sono", baseSito).toString(),
+            url: new URL(p.chiSono, baseSito).toString(),
           },
         }
       : {}),
@@ -147,14 +152,14 @@ export default async function PaginaArticolo(
       {
         "@type": "ListItem",
         position: 1,
-        name: "Home",
-        item: new URL("/", baseSito).toString(),
+        name: t.home,
+        item: new URL(p.home, baseSito).toString(),
       },
       {
         "@type": "ListItem",
         position: 2,
         name: nomeCategoria(articolo.categoria),
-        item: new URL(`/${articolo.categoria}`, baseSito).toString(),
+        item: new URL(percorsoCategoria(articolo.categoria), baseSito).toString(),
       },
       {
         "@type": "ListItem",
@@ -182,7 +187,7 @@ export default async function PaginaArticolo(
       <BarraLettura />
       <IndiceArticolo voci={voci} />
       {altri.length > 0 && <ArticoliCorrelati articoli={altri} />}
-      <Link href={`/${articolo.categoria}`} className="categoria">
+      <Link href={percorsoCategoria(articolo.categoria)} className="categoria">
         {nomeCategoria(articolo.categoria)}
       </Link>
       {articolo.copertina && (
@@ -201,10 +206,10 @@ export default async function PaginaArticolo(
       )}
       <h1>{articolo.titolo}</h1>
       {articolo.autore && (
-        <p className="articolo-autore">di {articolo.autore.nome}</p>
+        <p className="articolo-autore">{t.firma(articolo.autore.nome)}</p>
       )}
       <p className="articolo-meta">
-        {dataLeggibile(articolo.data)} — Lettura da {articolo.minuti} minuti
+        {t.metaArticolo(dataLeggibile(articolo.data), articolo.minuti)}
       </p>
       <RichText
         className="articolo-corpo"
@@ -227,7 +232,7 @@ export default async function PaginaArticolo(
               />
             </div>
           ) : (
-            <div className="blocco articolo-firma-foto" data-eti="foto" />
+            <div className="blocco articolo-firma-foto" data-eti={t.foto} />
           )}
           <div>
             <h2>{articolo.autore.nome}</h2>
@@ -240,11 +245,11 @@ export default async function PaginaArticolo(
                     rel="noreferrer"
                     target="_blank"
                   >
-                    Instagram
+                    {t.instagram}
                   </a>
                 )}
                 {articolo.autore.email && (
-                  <a href={`mailto:${articolo.autore.email}`}>Email</a>
+                  <a href={`mailto:${articolo.autore.email}`}>{t.email}</a>
                 )}
               </div>
             )}

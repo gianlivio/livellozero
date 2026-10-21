@@ -1,6 +1,13 @@
 import { draftMode } from "next/headers";
 import { getPayload, type Where } from "payload";
 import config from "@/payload.config";
+import {
+  formatoDate,
+  inLingua,
+  LINGUA_PREDEFINITA,
+  type Lingua,
+  type PerLingua,
+} from "@/lib/lingue";
 import type {
   Articoli as ArticoloDoc,
   Autori as AutoreDoc,
@@ -45,29 +52,86 @@ export type Articolo = {
 };
 
 /**
- * Chiave e nome restano qui: la chiave e' l'indirizzo della pagina, e un nome
- * cambiato dal pannello non deve poter rompere il menu. Le descrizioni invece
- * stanno nel global "categorie": vedi descrizioneCategoria.
+ * Chiave, nome e indirizzo restano qui: un nome o un indirizzo cambiato dal
+ * pannello non deve poter rompere il menu. La chiave e' il valore salvato
+ * negli articoli e non cambia con la lingua; nome e percorso si'. Le
+ * descrizioni invece stanno nel global "categorie": vedi descrizioneCategoria.
  */
-export const CATEGORIE: { chiave: Categoria; nome: string }[] = [
-  { chiave: "approfondimenti", nome: "Approfondimenti" },
-  { chiave: "recensioni", nome: "Recensioni" },
-  { chiave: "consigli", nome: "Notizie" },
-  { chiave: "riflessioni", nome: "Riflessioni" },
-  { chiave: "classifiche", nome: "Classifiche" },
+export const CATEGORIE: {
+  chiave: Categoria;
+  nome: PerLingua<string>;
+  percorso: PerLingua<string>;
+}[] = [
+  {
+    chiave: "approfondimenti",
+    nome: { it: "Approfondimenti" },
+    percorso: { it: "approfondimenti" },
+  },
+  {
+    chiave: "recensioni",
+    nome: { it: "Recensioni" },
+    percorso: { it: "recensioni" },
+  },
+  {
+    chiave: "consigli",
+    nome: { it: "Notizie" },
+    percorso: { it: "consigli" },
+  },
+  {
+    chiave: "riflessioni",
+    nome: { it: "Riflessioni" },
+    percorso: { it: "riflessioni" },
+  },
+  {
+    chiave: "classifiche",
+    nome: { it: "Classifiche" },
+    percorso: { it: "classifiche" },
+  },
 ];
+
+/** La sezione che risponde a un indirizzo, in quella lingua. */
+export function categoriaDaPercorso(
+  percorso: string,
+  lingua: Lingua = LINGUA_PREDEFINITA
+) {
+  return CATEGORIE.find((c) => c.percorso[lingua] === percorso);
+}
+
+export function percorsoCategoria(
+  categoria: Categoria,
+  lingua: Lingua = LINGUA_PREDEFINITA
+): string {
+  const info = CATEGORIE.find((c) => c.chiave === categoria);
+  return info ? `/${inLingua(info.percorso, lingua)}` : `/${categoria}`;
+}
 
 async function ottieniPayload() {
   const resolvedConfig = await config;
   return getPayload({ config: resolvedConfig });
 }
 
+/**
+ * Le opzioni di lingua da aggiungere a ogni lettura da Payload. Per ora
+ * nessuna: la localizzazione non e' ancora attiva in payload.config.ts.
+ * Quando lo sara', qui arriveranno locale e fallbackLocale: false, e tutte le
+ * query di questo file le prenderanno da un punto solo.
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function opzioniLingua(lingua: Lingua) {
+  return {};
+}
+
 /** La descrizione scritta nel pannello, o stringa vuota se non c'e'. */
 export async function descrizioneCategoria(
-  categoria: Categoria
+  categoria: Categoria,
+  lingua: Lingua = LINGUA_PREDEFINITA
 ): Promise<string> {
   const payload = await ottieniPayload();
-  const globale = await payload.findGlobal({ slug: "categorie", depth: 0 });
+  const globale = await payload.findGlobal({
+    slug: "categorie",
+    depth: 0,
+    ...opzioniLingua(lingua),
+  });
   const voce = globale.voci?.find((v) => v.chiave === categoria);
   return voce?.descrizione?.trim() ?? "";
 }
@@ -144,7 +208,11 @@ const ELENCO_VUOTO: Elenco = {
  * un indirizzo scritto a mano — non deve dare una lista vuota: si ricade
  * sull'ultima pagina piena, e chi impagina usa la pagina che torna di qui.
  */
-async function trovaElenco(where: Where, pagina: number): Promise<Elenco> {
+async function trovaElenco(
+  where: Where,
+  pagina: number,
+  lingua: Lingua
+): Promise<Elenco> {
   const payload = await ottieniPayload();
   const query = {
     collection: "articoli" as const,
@@ -152,6 +220,7 @@ async function trovaElenco(where: Where, pagina: number): Promise<Elenco> {
     sort: "-dataPubblicazione",
     depth: 2,
     limit: PER_PAGINA,
+    ...opzioniLingua(lingua),
   };
 
   let risultato = await payload.find({ ...query, page: pagina });
@@ -176,7 +245,9 @@ export function paginaRichiesta(valore: string | string[] | undefined): number {
 }
 
 /** Tutti gli articoli in una volta: serve a generateStaticParams, non agli elenchi. */
-export async function tuttiGliArticoli(): Promise<Articolo[]> {
+export async function tuttiGliArticoli(
+  lingua: Lingua = LINGUA_PREDEFINITA
+): Promise<Articolo[]> {
   const payload = await ottieniPayload();
   const risultato = await payload.find({
     collection: "articoli",
@@ -184,14 +255,15 @@ export async function tuttiGliArticoli(): Promise<Articolo[]> {
     sort: "-dataPubblicazione",
     depth: 2,
     limit: 0,
+    ...opzioniLingua(lingua),
   });
   return risultato.docs.map(mappaArticolo);
 }
 
 /** Per la sitemap bastano indirizzo e data dell'ultima modifica. */
-export async function articoliPerSitemap(): Promise<
-  { slug: string; aggiornato: string }[]
-> {
+export async function articoliPerSitemap(
+  lingua: Lingua = LINGUA_PREDEFINITA
+): Promise<{ slug: string; aggiornato: string }[]> {
   const payload = await ottieniPayload();
   const risultato = await payload.find({
     collection: "articoli",
@@ -200,6 +272,7 @@ export async function articoliPerSitemap(): Promise<
     select: { slug: true, updatedAt: true },
     depth: 0,
     limit: 0,
+    ...opzioniLingua(lingua),
   });
   return risultato.docs.map((doc) => ({
     slug: doc.slug,
@@ -207,17 +280,22 @@ export async function articoliPerSitemap(): Promise<
   }));
 }
 
-export async function elencoArticoli(pagina = 1): Promise<Elenco> {
-  return trovaElenco(PUBBLICATI, pagina);
+export async function elencoArticoli(
+  pagina = 1,
+  lingua: Lingua = LINGUA_PREDEFINITA
+): Promise<Elenco> {
+  return trovaElenco(PUBBLICATI, pagina, lingua);
 }
 
 export async function articoliPerCategoria(
   categoria: Categoria,
-  pagina = 1
+  pagina = 1,
+  lingua: Lingua = LINGUA_PREDEFINITA
 ): Promise<Elenco> {
   return trovaElenco(
     { and: [PUBBLICATI, { categoria: { equals: categoria } }] },
-    pagina
+    pagina,
+    lingua
   );
 }
 
@@ -226,7 +304,11 @@ export async function articoliPerCategoria(
  * ogni parola del termine: le maiuscole non contano, e le parole vanno trovate
  * tutte nello stesso campo.
  */
-export async function cercaArticoli(q: string, pagina = 1): Promise<Elenco> {
+export async function cercaArticoli(
+  q: string,
+  pagina = 1,
+  lingua: Lingua = LINGUA_PREDEFINITA
+): Promise<Elenco> {
   const termine = q.trim();
   if (!termine) return ELENCO_VUOTO;
 
@@ -239,7 +321,8 @@ export async function cercaArticoli(q: string, pagina = 1): Promise<Elenco> {
         },
       ],
     },
-    pagina
+    pagina,
+    lingua
   );
 }
 
@@ -250,13 +333,15 @@ export async function cercaArticoli(q: string, pagina = 1): Promise<Elenco> {
  */
 export async function articoliCorrelati(
   articolo: Articolo,
-  quanti = 2
+  quanti = 2,
+  lingua: Lingua = LINGUA_PREDEFINITA
 ): Promise<Articolo[]> {
   const payload = await ottieniPayload();
   const query = {
     collection: "articoli" as const,
     sort: "-dataPubblicazione",
     depth: 2,
+    ...opzioniLingua(lingua),
   };
 
   const stessaCategoria = await payload.find({
@@ -287,7 +372,8 @@ export async function articoliCorrelati(
 }
 
 export async function articoloPerSlug(
-  slug: string
+  slug: string,
+  lingua: Lingua = LINGUA_PREDEFINITA
 ): Promise<Articolo | undefined> {
   const payload = await ottieniPayload();
   const { isEnabled: anteprima } = await draftMode();
@@ -305,17 +391,25 @@ export async function articoloPerSlug(
     draft: anteprima,
     depth: 2,
     limit: 1,
+    ...opzioniLingua(lingua),
   });
   const doc = risultato.docs[0];
   return doc ? mappaArticolo(doc) : undefined;
 }
 
-export function nomeCategoria(categoria: Categoria): string {
-  return CATEGORIE.find((c) => c.chiave === categoria)?.nome ?? categoria;
+export function nomeCategoria(
+  categoria: Categoria,
+  lingua: Lingua = LINGUA_PREDEFINITA
+): string {
+  const info = CATEGORIE.find((c) => c.chiave === categoria);
+  return info ? inLingua(info.nome, lingua) : categoria;
 }
 
-export function dataLeggibile(iso: string): string {
-  return new Intl.DateTimeFormat("it-IT", {
+export function dataLeggibile(
+  iso: string,
+  lingua: Lingua = LINGUA_PREDEFINITA
+): string {
+  return new Intl.DateTimeFormat(formatoDate(lingua), {
     day: "numeric",
     month: "long",
     year: "numeric",

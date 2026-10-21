@@ -1,9 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { LINGUA_PREDEFINITA, type Lingua } from "@/lib/lingue";
+import { testi } from "@/lib/testi";
 import { IconaFatto, IconaLink } from "./icone";
 
-export default function CopiaLink({ url }: { url: string }) {
+export default function CopiaLink({
+  url,
+  lingua = LINGUA_PREDEFINITA,
+}: {
+  url: string;
+  lingua?: Lingua;
+}) {
+  const t = testi(lingua);
   const [copiato, setCopiato] = useState(false);
 
   useEffect(() => {
@@ -25,7 +34,7 @@ export default function CopiaLink({ url }: { url: string }) {
   return (
     <button type="button" className="condivisione-voce" onClick={copia}>
       {copiato ? <IconaFatto /> : <IconaLink />}
-      <span>{copiato ? "Copiato" : "Copia link"}</span>
+      <span>{copiato ? t.copiato : t.copiaLink}</span>
     </button>
   );
 }

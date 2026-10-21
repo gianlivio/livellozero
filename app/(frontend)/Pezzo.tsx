@@ -1,13 +1,26 @@
 import Image from "next/image";
 import Link from "next/link";
-import { type Articolo, dataLeggibile, nomeCategoria } from "@/lib/articoli";
+import {
+  type Articolo,
+  dataLeggibile,
+  nomeCategoria,
+  percorsoCategoria,
+} from "@/lib/articoli";
+import { LINGUA_PREDEFINITA, percorsoArticolo, type Lingua } from "@/lib/lingue";
+import { testi } from "@/lib/testi";
 
 /**
  * Una riga di elenco. E' la stessa in home, categoria, ricerca e in fondo a un
  * articolo: tenerla in un posto solo evita che i quattro elenchi prendano
  * strade diverse a ogni ritocco.
  */
-export default function Pezzo({ articolo }: { articolo: Articolo }) {
+export default function Pezzo({
+  articolo,
+  lingua = LINGUA_PREDEFINITA,
+}: {
+  articolo: Articolo;
+  lingua?: Lingua;
+}) {
   return (
     <article className="pezzo">
       {articolo.copertina ? (
@@ -23,17 +36,22 @@ export default function Pezzo({ articolo }: { articolo: Articolo }) {
           />
         </div>
       ) : (
-        <div className="blocco pezzo-immagine" data-eti="immagine articolo" />
+        <div className="blocco pezzo-immagine" data-eti={testi(lingua).immagineArticolo} />
       )}
       <div className="pezzo-testo">
-        <Link href={`/${articolo.categoria}`} className="categoria">
-          {nomeCategoria(articolo.categoria)}
+        <Link
+          href={percorsoCategoria(articolo.categoria, lingua)}
+          className="categoria"
+        >
+          {nomeCategoria(articolo.categoria, lingua)}
         </Link>
         <h3>
-          <Link href={`/articoli/${articolo.slug}`}>{articolo.titolo}</Link>
+          <Link href={percorsoArticolo(articolo.slug, lingua)}>
+            {articolo.titolo}
+          </Link>
         </h3>
         <p className="sommario">{articolo.sommario}</p>
-        <p className="data">{dataLeggibile(articolo.data)}</p>
+        <p className="data">{dataLeggibile(articolo.data, lingua)}</p>
       </div>
     </article>
   );

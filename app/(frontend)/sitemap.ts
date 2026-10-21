@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { articoliPerSitemap, CATEGORIE } from "@/lib/articoli";
+import { inLingua, percorsi } from "@/lib/lingue";
 import { baseSito, urlArticolo } from "@/lib/sito";
 
 /**
@@ -15,16 +16,17 @@ function url(percorso: string): string {
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const articoli = await articoliPerSitemap();
+  const p = percorsi();
 
   return [
-    { url: url("/"), changeFrequency: "daily", priority: 1 },
+    { url: url(p.home), changeFrequency: "daily", priority: 1 },
     ...CATEGORIE.map((categoria) => ({
-      url: url(`/${categoria.chiave}`),
+      url: url(`/${inLingua(categoria.percorso, "it")}`),
       changeFrequency: "weekly" as const,
       priority: 0.8,
     })),
-    { url: url("/chi-sono"), changeFrequency: "monthly", priority: 0.5 },
-    { url: url("/progetto"), changeFrequency: "monthly", priority: 0.5 },
+    { url: url(p.chiSono), changeFrequency: "monthly", priority: 0.5 },
+    { url: url(p.progetto), changeFrequency: "monthly", priority: 0.5 },
     ...articoli.map((articolo) => ({
       url: urlArticolo(articolo.slug),
       lastModified: articolo.aggiornato,

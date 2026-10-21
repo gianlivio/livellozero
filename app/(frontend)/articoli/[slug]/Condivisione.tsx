@@ -1,14 +1,22 @@
+import { LINGUA_PREDEFINITA, type Lingua } from "@/lib/lingue";
+import { testi } from "@/lib/testi";
 import CopiaLink from "./CopiaLink";
 import { IconaTelegram, IconaWhatsApp, IconaX } from "./icone";
 
 type Props = {
   url: string;
   titolo: string;
+  lingua?: Lingua;
 };
 
 /** La riga di chiusura dell'articolo, a tutte le larghezze: la colonna a
  *  destra adesso tiene le altre letture, non i pulsanti. */
-export default function Condivisione({ url, titolo }: Props) {
+export default function Condivisione({
+  url,
+  titolo,
+  lingua = LINGUA_PREDEFINITA,
+}: Props) {
+  const t = testi(lingua);
   const destinazioni = [
     {
       nome: "WhatsApp",
@@ -33,8 +41,8 @@ export default function Condivisione({ url, titolo }: Props) {
   ];
 
   return (
-    <aside className="condivisione" aria-label="Condividi l'articolo">
-      <p className="condivisione-etichetta">Condividi</p>
+    <aside className="condivisione" aria-label={t.condividiEtichetta}>
+      <p className="condivisione-etichetta">{t.condividi}</p>
       <div className="condivisione-pulsanti">
         {destinazioni.map((destinazione) => (
           <a

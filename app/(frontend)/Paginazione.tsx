@@ -1,5 +1,7 @@
 import Link from "next/link";
 import type { Elenco } from "@/lib/articoli";
+import { LINGUA_PREDEFINITA, type Lingua } from "@/lib/lingue";
+import { testi } from "@/lib/testi";
 
 type Props = {
   elenco: Elenco;
@@ -7,6 +9,7 @@ type Props = {
   base: string;
   /** Quel che va tenuto nell'indirizzo oltre alla pagina, come la q della ricerca. */
   parametri?: Record<string, string>;
+  lingua?: Lingua;
 };
 
 /** La prima pagina e' l'indirizzo nudo: /recensioni, non /recensioni?pagina=1. */
@@ -27,27 +30,33 @@ function indirizzo(
  * resta al suo posto ma spento, cosi' i tre elementi non ballano di pagina in
  * pagina.
  */
-export default function Paginazione({ elenco, base, parametri = {} }: Props) {
+export default function Paginazione({
+  elenco,
+  base,
+  parametri = {},
+  lingua = LINGUA_PREDEFINITA,
+}: Props) {
   if (elenco.pagineTotali <= 1) return null;
+  const t = testi(lingua);
 
   return (
-    <nav className="paginazione" aria-label="Pagine dell'elenco">
+    <nav className="paginazione" aria-label={t.paginazione}>
       {elenco.haPrecedente ? (
         <Link
           className="paginazione-salto"
           href={indirizzo(base, parametri, elenco.pagina - 1)}
           rel="prev"
         >
-          Più recenti
+          {t.piuRecenti}
         </Link>
       ) : (
         <span className="paginazione-salto" aria-disabled="true">
-          Più recenti
+          {t.piuRecenti}
         </span>
       )}
 
       <span className="paginazione-stato">
-        Pagina {elenco.pagina} di {elenco.pagineTotali}
+        {t.statoPagina(elenco.pagina, elenco.pagineTotali)}
       </span>
 
       {elenco.haSuccessiva ? (
@@ -56,11 +65,11 @@ export default function Paginazione({ elenco, base, parametri = {} }: Props) {
           href={indirizzo(base, parametri, elenco.pagina + 1)}
           rel="next"
         >
-          Più vecchi
+          {t.piuVecchi}
         </Link>
       ) : (
         <span className="paginazione-salto" aria-disabled="true">
-          Più vecchi
+          {t.piuVecchi}
         </span>
       )}
     </nav>

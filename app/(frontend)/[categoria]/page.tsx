@@ -3,27 +3,30 @@ import { notFound } from "next/navigation";
 import {
   articoliPerCategoria,
   CATEGORIE,
+  categoriaDaPercorso,
   descrizioneCategoria,
   paginaRichiesta,
 } from "@/lib/articoli";
+import { inLingua } from "@/lib/lingue";
+import { testi } from "@/lib/testi";
 import Paginazione from "../Paginazione";
 import Pezzo from "../Pezzo";
 
 export const revalidate = 3600;
 
 export function generateStaticParams() {
-  return CATEGORIE.map((c) => ({ categoria: c.chiave }));
+  return CATEGORIE.map((c) => ({ categoria: inLingua(c.percorso, "it") }));
 }
 
 export async function generateMetadata(
   props: PageProps<"/[categoria]">
 ): Promise<Metadata> {
   const { categoria } = await props.params;
-  const info = CATEGORIE.find((c) => c.chiave === categoria);
+  const info = categoriaDaPercorso(categoria);
   if (!info) notFound();
 
   return {
-    title: `${info.nome} — Livello Zero`,
+    title: testi().titoloPagina(inLingua(info.nome, "it")),
   };
 }
 
@@ -31,8 +34,9 @@ export default async function PaginaCategoria(
   props: PageProps<"/[categoria]">
 ) {
   const { categoria } = await props.params;
-  const info = CATEGORIE.find((c) => c.chiave === categoria);
+  const info = categoriaDaPercorso(categoria);
   if (!info) notFound();
+  const t = testi();
 
   const parametri = await props.searchParams;
   const [elenco, descrizione] = await Promise.all([
@@ -42,11 +46,11 @@ export default async function PaginaCategoria(
 
   return (
     <section className="guscio pagina-categoria">
-      <h1>{info.nome}</h1>
+      <h1>{inLingua(info.nome, "it")}</h1>
       {descrizione && <p className="descrizione">{descrizione}</p>}
 
       {elenco.articoli.length === 0 ? (
-        <p className="vuoto">Ancora nessun articolo in questa sezione.</p>
+        <p className="vuoto">{t.sezioneVuota}</p>
       ) : (
         <>
           <div className="elenco-pezzi">
@@ -54,7 +58,10 @@ export default async function PaginaCategoria(
               <Pezzo articolo={articolo} key={articolo.slug} />
             ))}
           </div>
-          <Paginazione elenco={elenco} base={`/${info.chiave}`} />
+          <Paginazione
+            elenco={elenco}
+            base={`/${inLingua(info.percorso, "it")}`}
+          />
         </>
       )}
     </section>

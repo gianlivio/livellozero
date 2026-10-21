@@ -1,8 +1,14 @@
 "use client";
 
 import { useEffect } from "react";
+import { LINGUA_PREDEFINITA, type Lingua } from "@/lib/lingue";
+import { testi } from "@/lib/testi";
 
-export default function InterruttoreTema() {
+export default function InterruttoreTema({
+  lingua = LINGUA_PREDEFINITA,
+}: {
+  lingua?: Lingua;
+}) {
   useEffect(() => {
     const salvato = localStorage.getItem("tema");
     if (salvato === "chiaro" || salvato === "scuro") {
@@ -23,7 +29,7 @@ export default function InterruttoreTema() {
       type="button"
       className="interruttore-tema"
       onClick={cambia}
-      aria-label="Cambia tema"
+      aria-label={testi(lingua).cambiaTema}
     >
       ◐
     </button>
