@@ -6,24 +6,28 @@ import {
   nomeCategoria,
   percorsoCategoria,
 } from "@/lib/articoli";
+import { homeIndicizzabile, NOINDEX } from "@/lib/indicizzabili";
 import { percorsi, percorsoArticolo, type Lingua } from "@/lib/lingue";
 import { immagineDa, leggiChiSono, primoParagrafo } from "@/lib/pagine";
-import { baseSito } from "@/lib/sito";
+import { alternati, baseSito } from "@/lib/sito";
 import { testi } from "@/lib/testi";
 import Paginazione from "./Paginazione";
 import Pezzo from "./Pezzo";
 
-/**
- * In una lingua diversa dall'italiano una pagina senza contenuto resta
- * raggiungibile ma fuori dai motori di ricerca. In italiano no: e' il sito
- * principale, e una sezione momentaneamente vuota non va tolta da Google.
- */
+/** Noindex e hreflang: le regole stanno in lib/indicizzabili.ts. */
 export async function metadatiHome(lingua: Lingua): Promise<Metadata> {
-  if (lingua === "it") return {};
-  const elenco = await elencoArticoli(1, lingua);
-  return elenco.articoli.length === 0
-    ? { robots: { index: false, follow: true } }
-    : {};
+  const [it, en] = await Promise.all([
+    homeIndicizzabile("it"),
+    homeIndicizzabile("en"),
+  ]);
+  const qui = lingua === "it" ? it : en;
+  return {
+    ...(!qui && NOINDEX),
+    alternates: alternati({
+      it: it ? percorsi("it").home : null,
+      en: en ? percorsi("en").home : null,
+    }),
+  };
 }
 
 /** La home in una lingua. La rotta le passa il numero di pagina gia' letto. */
@@ -53,6 +57,7 @@ export default async function PaginaHome({
       "@type": "WebSite",
       name: "Livello Zero",
       url: urlHome,
+      inLanguage: lingua,
     },
     {
       "@context": "https://schema.org",

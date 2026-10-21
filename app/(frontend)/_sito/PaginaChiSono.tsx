@@ -3,19 +3,28 @@ import Image from "next/image";
 import { RichText } from "@payloadcms/richtext-lexical/react";
 import { getPayload } from "payload";
 import config from "@/payload.config";
+import { NOINDEX, paginaFissaIndicizzabile } from "@/lib/indicizzabili";
 import { percorsi, type Lingua } from "@/lib/lingue";
 import { haTesto, immagineDa, leggiChiSono } from "@/lib/pagine";
-import { baseSito } from "@/lib/sito";
+import { alternati, baseSito } from "@/lib/sito";
 import { testi } from "@/lib/testi";
 
-/** Senza testo in quella lingua la pagina non va sui motori di ricerca. */
+/** Noindex e hreflang: le regole stanno in lib/indicizzabili.ts. */
 export async function metadatiChiSono(lingua: Lingua): Promise<Metadata> {
   const t = testi(lingua);
-  const pagina = await leggiChiSono(lingua);
+  const [it, en] = await Promise.all([
+    paginaFissaIndicizzabile("chiSono", "it"),
+    paginaFissaIndicizzabile("chiSono", "en"),
+  ]);
+  const qui = lingua === "it" ? it : en;
   return {
     title: t.titoloPagina(t.chiSono),
     description: t.chiSonoDescrizione,
-    ...(!haTesto(pagina.testo) && { robots: { index: false, follow: true } }),
+    ...(!qui && NOINDEX),
+    alternates: alternati({
+      it: it ? percorsi("it").chiSono : null,
+      en: en ? percorsi("en").chiSono : null,
+    }),
   };
 }
 
@@ -42,6 +51,7 @@ export default async function PaginaChiSono({ lingua }: { lingua: Lingua }) {
   const datiStrutturati = autore && {
     "@context": "https://schema.org",
     "@type": "ProfilePage",
+    inLanguage: lingua,
     url: new URL(percorsi(lingua).chiSono, baseSito).toString(),
     mainEntity: {
       "@type": "Person",

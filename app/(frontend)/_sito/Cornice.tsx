@@ -1,11 +1,18 @@
 import { Archivo, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import Link from "next/link";
 import { CATEGORIE, percorsoCategoria } from "@/lib/articoli";
-import { inLingua, LINGUA_PREDEFINITA, percorsi, type Lingua } from "@/lib/lingue";
+import {
+  altraLingua,
+  inLingua,
+  LINGUA_PREDEFINITA,
+  percorsi,
+  type Lingua,
+} from "@/lib/lingue";
 import { testi } from "@/lib/testi";
 import CampoRicerca from "./CampoRicerca";
 import Marchio from "./Marchio";
 import InterruttoreTema from "./InterruttoreTema";
+import SelettoreLingua from "./SelettoreLingua";
 import "./globals.css";
 
 /**
@@ -72,6 +79,12 @@ export function Testata({
           <Link href={p.chiSono}>{t.chiSono}</Link>
         </nav>
         <CampoRicerca lingua={lingua} />
+        <SelettoreLingua
+          verso={altraLingua(lingua)}
+          home={percorsi(altraLingua(lingua)).home}
+          testo={t.selettoreLingua}
+          etichetta={t.selettoreEtichetta}
+        />
         <InterruttoreTema etichetta={t.cambiaTema} />
       </div>
     </header>

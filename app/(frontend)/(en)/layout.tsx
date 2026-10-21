@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   title: testi("en").titoloSito,
   description: testi("en").descrizioneSito,
   robots: { "max-image-preview": "large" },
+  openGraph: { locale: "en_US" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

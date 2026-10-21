@@ -27,6 +27,9 @@ const it = {
   instagram: "Instagram",
   piede: "Livello Zero — progetto editoriale indipendente",
   cambiaTema: "Cambia tema",
+  // il selettore porta all'altra lingua: testo ed etichetta sono in quella
+  selettoreLingua: "EN",
+  selettoreEtichetta: "Read in English",
 
   // ricerca
   cerca: "Cerca",
@@ -104,6 +107,8 @@ const en: Testi = {
   instagram: "Instagram",
   piede: "Livello Zero — an independent editorial project",
   cambiaTema: "Change theme",
+  selettoreLingua: "IT",
+  selettoreEtichetta: "Leggi in italiano",
 
   cerca: "Search",
   cercaSegnaposto: "Search articles",

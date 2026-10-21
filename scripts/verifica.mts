@@ -3,14 +3,18 @@
  * controlla che ci sia dentro quello che ci deve essere. Non tocca il codice e
  * non ha bisogno del database: guarda solo l'HTML che arriva.
  *
- *   npm run verifica                          — controlla la produzione
- *   SITO=http://localhost:3000 npm run verifica  — controlla un'altra copia
+ *   npm run verifica                                  — controlla la produzione
+ *   npm run verifica -- https://<anteprima>.vercel.app  — controlla un'altra copia
+ *   SITO=http://localhost:3000 npm run verifica          — lo stesso, da variabile
+ *
+ * Sitemap, robots e hreflang devono citare sempre il dominio pubblico, anche
+ * quando si controlla un'altra copia: DOMINIO=... se e' un altro.
  *
  * Esce con codice 1 se qualcosa non va, cosi' serve anche da controllo
  * automatico dopo un rilascio.
  */
 
-const BASE = (process.env.SITO ?? "https://livellozero.vercel.app").replace(/\/$/, "");
+const BASE = (process.argv[2] ?? process.env.SITO ?? "https://livellozero.vercel.app").replace(/\/$/, "");
 
 /** Il dominio che sitemap e robots devono citare, qualunque copia si stia
  *  controllando: anche in locale gli indirizzi sono quelli pubblici. */
@@ -26,6 +30,9 @@ const CATEGORIE = [
   "classifiche",
 ];
 
+/** Le stesse cinque, in inglese, sotto /en. */
+const CATEGORIE_EN = ["deep-dives", "reviews", "news", "opinions", "rankings"];
+
 /** Quante richieste in volo insieme quando si controllano le immagini. */
 const PARALLELE = 8;
 
@@ -39,6 +46,11 @@ function esito(ok: boolean, titolo: string, dettaglio = ""): void {
   else falliti++;
   const segno = ok ? "  ok  " : " ROTTO";
   console.log(`${segno}  ${titolo}${dettaglio ? `  — ${dettaglio}` : ""}`);
+}
+
+/** Una cosa da sapere che non e' un errore: non conta nel resoconto. */
+function nota(titolo: string, dettaglio = ""): void {
+  console.log(`  nota  ${titolo}${dettaglio ? `  — ${dettaglio}` : ""}`);
 }
 
 function sezione(titolo: string): void {
@@ -107,6 +119,36 @@ function fra(html: string, da: RegExp, a: string): string {
 function slugArticoli(html: string): string[] {
   const trovati = html.matchAll(/href="\/articoli\/([^"#?]+)"/g);
   return [...new Set([...trovati].map((m) => m[1]))];
+}
+
+function slugArticoliEn(html: string): string[] {
+  const trovati = html.matchAll(/href="\/en\/articles\/([^"#?]+)"/g);
+  return [...new Set([...trovati].map((m) => m[1]))];
+}
+
+/** L'HTML senza gli script: quello che si vede anche senza JavaScript. */
+function senzaScript(html: string): string {
+  return html.replace(/<script\b[\s\S]*?<\/script>/g, "");
+}
+
+function linguaDi(html: string): string {
+  return html.match(/<html\b[^>]*\blang="([^"]+)"/)?.[1] ?? "";
+}
+
+function noindex(html: string): boolean {
+  return /<meta name="robots" content="[^"]*noindex/.test(html);
+}
+
+function ogLocale(html: string): string {
+  return html.match(/<meta property="og:locale" content="([^"]+)"/)?.[1] ?? "";
+}
+
+/** L'href dell'hreflang di quella lingua, o "" se la pagina non ce l'ha. */
+function hreflang(html: string, lingua: string): string {
+  const tag = [...html.matchAll(/<link\b[^>]*rel="alternate"[^>]*>/g)]
+    .map((m) => m[0])
+    .find((t) => t.includes(`hrefLang="${lingua}"`) || t.includes(`hreflang="${lingua}"`));
+  return scioglieEntita(tag?.match(/href="([^"]+)"/)?.[1] ?? "");
 }
 
 /** Ogni indirizzo d'immagine citato nella pagina: src e tutte le voci di
@@ -276,6 +318,110 @@ for (const percorso of ["/chi-sono", "/progetto"]) {
   raccogliImmagini(p.html);
 }
 
+// ---- lingue
+sezione("Lingue");
+
+// L'italiano dichiara la sua lingua.
+for (const percorso of ["/", "/chi-sono", ...(slug[0] ? [`/articoli/${slug[0]}`] : [])]) {
+  const p = await prendi(percorso);
+  esito(
+    linguaDi(p.html) === "it" && ogLocale(p.html) === "it_IT",
+    `${percorso} ha lang="it" e og:locale it_IT`,
+    `lang="${linguaDi(p.html)}" og:locale="${ogLocale(p.html)}"`
+  );
+}
+
+// Le pagine inglesi rispondono tutte, in inglese. Home e sezioni sono in
+// noindex se e solo se non hanno articoli; la ricerca lo e' sempre.
+const pagineEn = ["/en", ...CATEGORIE_EN.map((c) => `/en/${c}`), "/en/about", "/en/project", "/en/search"];
+const enIndicizzabili: string[] = [];
+const slugEn = new Set<string>();
+let homeEn = "";
+for (const percorso of pagineEn) {
+  const p = await prendi(percorso);
+  if (percorso === "/en") homeEn = p.html;
+  const elencati = slugArticoliEn(p.html);
+  elencati.forEach((s) => slugEn.add(s));
+  const ni = noindex(p.html);
+  if (!ni) enIndicizzabili.push(percorso);
+  esito(
+    p.stato === 200 && linguaDi(p.html) === "en" && ogLocale(p.html) === "en_US",
+    `${percorso} risponde 200 in inglese`,
+    `stato ${p.stato}, lang="${linguaDi(p.html)}", og:locale="${ogLocale(p.html)}"`
+  );
+  if (percorso === "/en/search") {
+    esito(ni, `${percorso} e' in noindex`);
+  } else if (percorso === "/en" || CATEGORIE_EN.some((c) => percorso === `/en/${c}`)) {
+    esito(
+      ni === (elencati.length === 0),
+      `${percorso}: noindex solo se senza articoli`,
+      `${elencati.length} articoli, ${ni ? "noindex" : "indicizzabile"}`
+    );
+  } else {
+    nota(`${percorso} e' ${ni ? "in noindex (nessun testo inglese)" : "indicizzabile"}`);
+  }
+}
+const menuEn = fra(homeEn, /<nav\b[^>]*class="[^"]*navigazione/, "</nav>");
+const sezioniNelMenuEn = CATEGORIE_EN.filter((c) => menuEn.includes(`href="/en/${c}"`));
+esito(
+  sezioniNelMenuEn.length === CATEGORIE_EN.length,
+  "il menu inglese ha le cinque sezioni inglesi",
+  `${sezioniNelMenuEn.length} su ${CATEGORIE_EN.length}`
+);
+
+for (const s of slugEn) {
+  const p = await prendi(`/en/articles/${s}`);
+  esito(
+    p.stato === 200 && linguaDi(p.html) === "en" && !noindex(p.html),
+    `/en/articles/${s} risponde 200, in inglese, indicizzabile`,
+    `stato ${p.stato}, lang="${linguaDi(p.html)}"`
+  );
+}
+if (slugEn.size === 0) nota("nessun articolo inglese pubblicato: niente da controllare");
+
+// Il selettore di lingua c'e' in tutte e due le testate. Senza JavaScript
+// porta alla home dell'altra lingua; la gemella la sceglie nel browser.
+for (const [percorso, html, attesa] of [["/", home.html, "/en"], ["/en", homeEn, "/"]] as const) {
+  const selettore = fra(html, /<a\b[^>]*class="selettore-lingua"/, "</a>");
+  const href = selettore.match(/href="([^"]+)"/)?.[1] ?? "";
+  esito(selettore !== "" && href === attesa, `${percorso}: selettore di lingua verso ${attesa}`, selettore ? `href="${href}"` : "manca");
+}
+
+// hreflang reciproco: se una pagina dichiara la gemella, la gemella risponde,
+// e' indicizzabile, dichiara a sua volta la prima, e x-default e' l'italiano.
+const pagineIt = ["/", ...CATEGORIE.map((c) => `/${c}`), "/chi-sono", "/progetto", ...slug.map((s) => `/articoli/${s}`)];
+let coppie = 0;
+const conGemellaIt = new Set<string>();
+for (const percorso of pagineIt) {
+  const it = await prendi(percorso);
+  const versoEn = hreflang(it.html, "en");
+  if (!versoEn) continue;
+  coppie++;
+  const percorsoEn = new URL(versoEn).pathname;
+  conGemellaIt.add(percorsoEn);
+  const en = await prendi(percorsoEn);
+  const ritorno = hreflang(en.html, "it");
+  const problemi = [
+    new URL(versoEn).origin !== DOMINIO && `dominio ${new URL(versoEn).origin}`,
+    en.stato !== 200 && `la gemella risponde ${en.stato}`,
+    noindex(en.html) && "la gemella e' in noindex",
+    (!ritorno || new URL(ritorno).pathname !== percorso) && "la gemella non rimanda indietro",
+    hreflang(it.html, "x-default") !== hreflang(it.html, "it") && "x-default non e' l'italiano",
+    hreflang(en.html, "x-default") !== ritorno && "x-default della gemella non e' l'italiano",
+  ].filter(Boolean);
+  esito(problemi.length === 0, `hreflang ${percorso} <-> ${percorsoEn}`, problemi.join(", "));
+}
+if (coppie === 0) nota("nessuna pagina italiana ha una gemella inglese");
+// E al contrario: ogni pagina inglese indicizzabile ha la sua gemella italiana.
+const senzaGemella = [...enIndicizzabili, ...[...slugEn].map((s) => `/en/articles/${s}`)].filter(
+  (p) => !conGemellaIt.has(p)
+);
+esito(
+  senzaGemella.length === 0,
+  "ogni pagina inglese indicizzabile e' gemella di una pagina italiana",
+  senzaGemella.join(", ")
+);
+
 // ---- 404
 sezione("Pagina inesistente");
 const persa = await prendi("/questa-pagina-non-esiste-di-sicuro-42");
@@ -286,6 +432,25 @@ esito(
   "la 404 mostra le categorie",
   `${categorieIn404.length} su ${CATEGORIE.length}`
 );
+
+const persaEn = await prendi("/en/this-page-does-not-exist-42");
+esito(persaEn.stato === 404, "un indirizzo inglese inesistente risponde 404", `stato ${persaEn.stato}`);
+esito(
+  linguaDi(persaEn.html) === "en" && /This page doesn(&#x27;|')t exist/.test(senzaScript(persaEn.html)),
+  "la 404 inglese e' in inglese, nell'HTML anche senza JavaScript",
+  `lang="${linguaDi(persaEn.html)}"`
+);
+
+// Un articolo che non esiste risponde 404, ma Next manda l'HTML senza
+// contenuto (notFound() dentro una pagina, con piu' layout radice): limite
+// noto, segnalato e non contato come errore.
+for (const percorso of ["/articoli/non-esiste-di-sicuro-42", "/en/articles/does-not-exist-42"]) {
+  const p = await prendi(percorso);
+  esito(p.stato === 404, `${percorso} risponde 404`, `stato ${p.stato}`);
+  if (!/non esiste|doesn(&#x27;|')t exist/.test(senzaScript(p.html))) {
+    nota(`${percorso}: la 404 non ha contenuto senza JavaScript`, "limite noto di Next");
+  }
+}
 
 // ---- sitemap e robots
 sezione("Sitemap e robots");
@@ -302,13 +467,32 @@ const percorsi = new Set(indirizzi.map((u) => new URL(u).pathname));
 const attesi = ["/", ...CATEGORIE.map((c) => `/${c}`), "/chi-sono", "/progetto", ...slug.map((s) => `/articoli/${s}`)];
 const assenti = attesi.filter((p) => !percorsi.has(p));
 esito(assenti.length === 0, "la sitemap contiene home, categorie, pagine e articoli", assenti.length ? `mancano: ${assenti.join(", ")}` : `${attesi.length} su ${attesi.length}`);
-const vietati = indirizzi.filter((u) => /\/(cerca|admin)(\/|$)|\?/.test(u));
-esito(vietati.length === 0, "la sitemap non contiene /cerca, /admin o querystring", vietati.join(", "));
+const vietati = indirizzi.filter((u) => /\/(cerca|admin|search)(\/|$)|\?/.test(u));
+esito(vietati.length === 0, "la sitemap non contiene ricerca, /admin o querystring", vietati.join(", "));
+
+// In inglese: dentro tutte e sole le pagine indicizzabili, e ciascuna con la
+// gemella italiana dichiarata (xhtml:link hreflang="it").
+const enAttesi = [...enIndicizzabili, ...[...slugEn].map((s) => `/en/articles/${s}`)];
+const enAssenti = enAttesi.filter((p) => !percorsi.has(p));
+esito(enAssenti.length === 0, "la sitemap contiene le pagine inglesi indicizzabili", enAssenti.length ? `mancano: ${enAssenti.join(", ")}` : `${enAttesi.length} pagine`);
+const enInMappa = [...percorsi].filter((p) => p === "/en" || p.startsWith("/en/"));
+const enDiTroppo: string[] = [];
+for (const p of enInMappa.filter((p) => !enAttesi.includes(p))) {
+  const r = await prendi(p);
+  if (r.stato !== 200 || noindex(r.html)) enDiTroppo.push(p);
+}
+esito(enDiTroppo.length === 0, "la sitemap non contiene pagine inglesi in noindex o rotte", enDiTroppo.join(", "));
+const voci = [...mappa.html.matchAll(/<url>([\s\S]*?)<\/url>/g)].map((m) => m[1]);
+const enSenzaGemella = voci
+  .filter((v) => /<loc>[^<]*\/en(\/|<)/.test(v))
+  .filter((v) => !/hreflang="it"/.test(v))
+  .map((v) => v.match(/<loc>([^<]+)/)?.[1]);
+esito(enSenzaGemella.length === 0, "nella sitemap ogni pagina inglese dichiara la gemella italiana", enSenzaGemella.join(", "));
 
 const robot = await prendi("/robots.txt");
 esito(robot.stato === 200, "/robots.txt risponde 200", robot.errore ?? `stato ${robot.stato}`);
-const divieti = ["/admin", "/api", "/cerca"].filter((p) => !robot.html.includes(`Disallow: ${p}`));
-esito(divieti.length === 0, "robots.txt vieta /admin, /api e /cerca", divieti.length ? `mancano: ${divieti.join(", ")}` : "");
+const divieti = ["/admin", "/api", "/cerca", "/en/search"].filter((p) => !robot.html.includes(`Disallow: ${p}`));
+esito(divieti.length === 0, "robots.txt vieta /admin, /api, /cerca e /en/search", divieti.length ? `mancano: ${divieti.join(", ")}` : "");
 esito(
   robot.html.includes(`Sitemap: ${DOMINIO}/sitemap.xml`),
   "robots.txt indica la sitemap sul dominio giusto",

@@ -159,6 +159,31 @@ a {
   border-bottom-color: var(--accento);
 }
 
+/* Il passaggio all'altra lingua: stesso riquadro del tema, largo quanto il
+   testo. */
+.selettore-lingua {
+  height: 34px;
+  padding: 0 10px;
+  flex-shrink: 0;
+  border: 1px solid var(--linea);
+  color: var(--testo);
+  font-family: var(--font-archivo), sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.selettore-lingua:hover,
+.selettore-lingua:focus-visible {
+  border-color: var(--accento);
+  color: var(--accento);
+}
+
 .interruttore-tema {
   width: 34px;
   height: 34px;

@@ -1,17 +1,27 @@
 import type { Metadata } from "next";
 import { RichText } from "@payloadcms/richtext-lexical/react";
-import type { Lingua } from "@/lib/lingue";
+import { NOINDEX, paginaFissaIndicizzabile } from "@/lib/indicizzabili";
+import { percorsi, type Lingua } from "@/lib/lingue";
 import { haTesto, leggiProgetto } from "@/lib/pagine";
+import { alternati } from "@/lib/sito";
 import { testi } from "@/lib/testi";
 
-/** Senza testo in quella lingua la pagina non va sui motori di ricerca. */
+/** Noindex e hreflang: le regole stanno in lib/indicizzabili.ts. */
 export async function metadatiProgetto(lingua: Lingua): Promise<Metadata> {
   const t = testi(lingua);
-  const pagina = await leggiProgetto(lingua);
+  const [it, en] = await Promise.all([
+    paginaFissaIndicizzabile("progetto", "it"),
+    paginaFissaIndicizzabile("progetto", "en"),
+  ]);
+  const qui = lingua === "it" ? it : en;
   return {
     title: t.titoloPagina(t.progettoTitolo),
     description: t.progettoDescrizione,
-    ...(!haTesto(pagina.testo) && { robots: { index: false, follow: true } }),
+    ...(!qui && NOINDEX),
+    alternates: alternati({
+      it: it ? percorsi("it").progetto : null,
+      en: en ? percorsi("en").progetto : null,
+    }),
   };
 }
 

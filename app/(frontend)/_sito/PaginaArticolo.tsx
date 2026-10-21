@@ -12,11 +12,18 @@ import {
   dataLeggibile,
   nomeCategoria,
   percorsoCategoria,
+  slugGemello,
   tuttiGliArticoli,
 } from "@/lib/articoli";
 import { ancoraTitolo, titoliArticolo } from "@/lib/indice";
-import { percorsi, type Lingua } from "@/lib/lingue";
-import { baseSito, urlArticolo } from "@/lib/sito";
+import {
+  altraLingua,
+  localeOg,
+  percorsi,
+  percorsoArticolo,
+  type Lingua,
+} from "@/lib/lingue";
+import { alternati, baseSito, urlArticolo } from "@/lib/sito";
 import { testi } from "@/lib/testi";
 import ArticoliCorrelati from "./articolo/ArticoliCorrelati";
 import BarraLettura from "./articolo/BarraLettura";
@@ -86,10 +93,22 @@ export async function metadatiArticolo(
     testi(lingua).titoloPagina(articolo.titolo);
   const descrizione = articolo.descrizioneGoogle?.trim() || articolo.sommario;
 
+  // La gemella nell'altra lingua esiste solo se li' l'articolo e' pubblicato
+  // (e, in inglese, con la casella accesa): solo allora ci sono gli hreflang.
+  const altra = altraLingua(lingua);
+  const gemello = await slugGemello(articolo.id, altra);
+
   return {
     title: titolo,
     description: descrizione,
+    alternates: alternati({
+      [lingua]: percorsoArticolo(articolo.slug, lingua),
+      [altra]: gemello ? percorsoArticolo(gemello, altra) : null,
+    }),
+    // L'openGraph della pagina sostituisce per intero quello del layout:
+    // og:locale va ripetuto qui.
     openGraph: {
+      locale: localeOg(lingua),
       title: titolo,
       description: descrizione,
       ...(articolo.copertina
@@ -127,6 +146,7 @@ export default async function PaginaArticolo({
   const datiStrutturati = {
     "@context": "https://schema.org",
     "@type": "Article",
+    inLanguage: lingua,
     headline: articolo.titolo,
     description: articolo.sommario,
     ...(articolo.copertina
@@ -153,6 +173,7 @@ export default async function PaginaArticolo({
   const briciole = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
+    inLanguage: lingua,
     itemListElement: [
       {
         "@type": "ListItem",

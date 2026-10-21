@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   title: testi("it").titoloSito,
   description: testi("it").descrizioneSito,
   robots: { "max-image-preview": "large" },
+  openGraph: { locale: "it_IT" },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

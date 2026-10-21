@@ -15,6 +15,7 @@ import { ChiSono } from "./globals/ChiSono";
 import { Progetto } from "./globals/Progetto";
 import { Categorie } from "./globals/Categorie";
 import { migrations } from "./migrations";
+import { percorsoArticolo } from "./lib/lingue";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -44,11 +45,15 @@ export default buildConfig({
         { name: "tablet", label: "Tablet", width: 768, height: 1024 },
         { name: "mobile", label: "Telefono", width: 390, height: 844 },
       ],
-      url: ({ data }) => {
+      // L'anteprima segue la lingua scelta nel pannello: in inglese apre
+      // /en/articles/<slug inglese>, con lo slug di quella lingua.
+      url: ({ data, locale }) => {
+        const lingua = locale?.code === "en" ? "en" : "it";
+        const slug = String(data?.slug ?? "");
         const parametri = new URLSearchParams({
-          slug: String(data?.slug ?? ""),
+          slug,
           collection: "articoli",
-          path: `/articoli/${data?.slug ?? ""}`,
+          path: percorsoArticolo(slug, lingua),
           previewSecret: process.env.PREVIEW_SECRET || "",
         });
         return `${indirizzoSito}/next/preview?${parametri.toString()}`;

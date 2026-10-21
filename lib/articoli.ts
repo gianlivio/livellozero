@@ -37,6 +37,7 @@ export type Autore = {
 };
 
 export type Articolo = {
+  id: number;
   slug: string;
   titolo: string;
   sommario: string;
@@ -110,6 +111,7 @@ function mappaAutore(autore: ArticoloDoc["autore"]): Autore | null {
 
 function mappaArticolo(doc: ArticoloDoc): Articolo {
   return {
+    id: doc.id,
     slug: doc.slug,
     titolo: doc.titolo,
     sommario: doc.sommario,
@@ -223,7 +225,7 @@ export async function tuttiGliArticoli(
 /** Per la sitemap bastano indirizzo e data dell'ultima modifica. */
 export async function articoliPerSitemap(
   lingua: Lingua = LINGUA_PREDEFINITA
-): Promise<{ slug: string; aggiornato: string }[]> {
+): Promise<{ id: number; slug: string; aggiornato: string }[]> {
   const payload = await ottieniPayload();
   const risultato = await payload.find({
     collection: "articoli",
@@ -235,9 +237,55 @@ export async function articoliPerSitemap(
     ...opzioniLingua(lingua),
   });
   return risultato.docs.map((doc) => ({
+    id: doc.id,
     slug: doc.slug,
     aggiornato: doc.updatedAt,
   }));
+}
+
+/**
+ * Se in una lingua c'e' almeno un articolo, in tutto il sito o in una sezione.
+ * Decide se le pagine di elenco di quella lingua vanno sui motori di ricerca.
+ */
+export async function haArticoli(
+  lingua: Lingua,
+  categoria?: Categoria
+): Promise<boolean> {
+  const payload = await ottieniPayload();
+  const risultato = await payload.find({
+    collection: "articoli",
+    where: categoria
+      ? { and: [pubblicati(lingua), { categoria: { equals: categoria } }] }
+      : pubblicati(lingua),
+    select: {},
+    depth: 0,
+    limit: 1,
+    pagination: false,
+    ...opzioniLingua(lingua),
+  });
+  return risultato.docs.length > 0;
+}
+
+/**
+ * Lo slug dello stesso articolo in un'altra lingua, se li' esiste per il sito
+ * (pubblicato e, in inglese, con la casella accesa). Serve a hreflang, al
+ * selettore di lingua e alla sitemap.
+ */
+export async function slugGemello(
+  id: number,
+  lingua: Lingua
+): Promise<string | null> {
+  const payload = await ottieniPayload();
+  const risultato = await payload.find({
+    collection: "articoli",
+    where: { and: [pubblicati(lingua), { id: { equals: id } }] },
+    select: { slug: true },
+    depth: 0,
+    limit: 1,
+    pagination: false,
+    ...opzioniLingua(lingua),
+  });
+  return risultato.docs[0]?.slug ?? null;
 }
 
 export async function elencoArticoli(

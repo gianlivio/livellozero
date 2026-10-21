@@ -21,6 +21,20 @@ export function inLingua<T>(valori: PerLingua<T>, lingua: Lingua): T {
   return valore;
 }
 
+export const LINGUE: Lingua[] = ["it", "en"];
+
+/** L'altra lingua: il sito ne ha due, quindi c'e' sempre una sola risposta. */
+export function altraLingua(lingua: Lingua): Lingua {
+  return lingua === "it" ? "en" : "it";
+}
+
+/** Il codice di og:locale (Open Graph usa il trattino basso). */
+const LOCALE_OG: PerLingua<string> = { it: "it_IT", en: "en_US" };
+
+export function localeOg(lingua: Lingua): string {
+  return inLingua(LOCALE_OG, lingua);
+}
+
 /** Come si scrivono le date in ciascuna lingua (Intl). */
 const FORMATO_DATE: PerLingua<string> = { it: "it-IT", en: "en-US" };
 

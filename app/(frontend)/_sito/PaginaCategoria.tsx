@@ -7,7 +7,9 @@ import {
   descrizioneCategoria,
   percorsoCategoria,
 } from "@/lib/articoli";
+import { sezioneIndicizzabile, NOINDEX } from "@/lib/indicizzabili";
 import { inLingua, type Lingua } from "@/lib/lingue";
+import { alternati } from "@/lib/sito";
 import { testi } from "@/lib/testi";
 import Paginazione from "./Paginazione";
 import Pezzo from "./Pezzo";
@@ -17,11 +19,7 @@ export function parametriCategorie(lingua: Lingua) {
   return CATEGORIE.map((c) => ({ categoria: inLingua(c.percorso, lingua) }));
 }
 
-/**
- * In una lingua diversa dall'italiano una pagina senza contenuto resta
- * raggiungibile ma fuori dai motori di ricerca. In italiano no: e' il sito
- * principale, e una sezione momentaneamente vuota non va tolta da Google.
- */
+/** Noindex e hreflang: le regole stanno in lib/indicizzabili.ts. */
 export async function metadatiCategoria(
   percorso: string,
   lingua: Lingua
@@ -29,13 +27,19 @@ export async function metadatiCategoria(
   const info = categoriaDaPercorso(percorso, lingua);
   if (!info) notFound();
 
-  const vuota =
-    lingua !== "it" &&
-    (await articoliPerCategoria(info.chiave, 1, lingua)).articoli.length === 0;
+  const [it, en] = await Promise.all([
+    sezioneIndicizzabile(info.chiave, "it"),
+    sezioneIndicizzabile(info.chiave, "en"),
+  ]);
+  const qui = lingua === "it" ? it : en;
 
   return {
     title: testi(lingua).titoloPagina(inLingua(info.nome, lingua)),
-    ...(vuota && { robots: { index: false, follow: true } }),
+    ...(!qui && NOINDEX),
+    alternates: alternati({
+      it: it ? percorsoCategoria(info.chiave, "it") : null,
+      en: en ? percorsoCategoria(info.chiave, "en") : null,
+    }),
   };
 }
 
