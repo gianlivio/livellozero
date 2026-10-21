@@ -6,6 +6,7 @@ import * as migration_20260921_165038_pagine_editabili from './20260921_165038_p
 import * as migration_20260925_055923_descrizioni_categorie from './20260925_055923_descrizioni_categorie';
 import * as migration_20261021_081347_campi_google from './20261021_081347_campi_google';
 import * as migration_20261021_134533_localizzazione from './20261021_134533_localizzazione';
+import * as migration_20261021_151340_titoli_predefiniti_per_lingua from './20261021_151340_titoli_predefiniti_per_lingua';
 
 export const migrations = [
   {
@@ -46,6 +47,11 @@ export const migrations = [
   {
     up: migration_20261021_134533_localizzazione.up,
     down: migration_20261021_134533_localizzazione.down,
-    name: '20261021_134533_localizzazione'
+    name: '20261021_134533_localizzazione',
+  },
+  {
+    up: migration_20261021_151340_titoli_predefiniti_per_lingua.up,
+    down: migration_20261021_151340_titoli_predefiniti_per_lingua.down,
+    name: '20261021_151340_titoli_predefiniti_per_lingua'
   },
 ];

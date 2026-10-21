@@ -17,7 +17,9 @@ export const Progetto: GlobalConfig = {
       localized: true,
       type: 'text',
       required: true,
-      defaultValue: 'Il progetto',
+      // Predefinito nella lingua che si sta compilando: con un valore fisso
+      // anche la versione inglese nascerebbe con il titolo italiano.
+      defaultValue: ({ locale }) => (locale === 'en' ? 'The project' : 'Il progetto'),
       label: 'Titolo',
     },
     {
