@@ -14,7 +14,7 @@ import {
   tuttiGliArticoli,
 } from "@/lib/articoli";
 import { ancoraTitolo, titoliArticolo } from "@/lib/indice";
-import { urlArticolo } from "@/lib/sito";
+import { baseSito, urlArticolo } from "@/lib/sito";
 import ArticoliCorrelati from "./ArticoliCorrelati";
 import BarraLettura from "./BarraLettura";
 import Condivisione from "./Condivisione";
@@ -112,8 +112,36 @@ export default async function PaginaArticolo(
   const voci = titoliArticolo(articolo.corpo);
   const url = urlArticolo(articolo.slug);
 
+  // Dati strutturati per Google. Niente dateModified: Articolo non ha un
+  // campo di aggiornamento.
+  const datiStrutturati = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: articolo.titolo,
+    description: articolo.sommario,
+    ...(articolo.copertina
+      ? { image: new URL(articolo.copertina.url, baseSito).toString() }
+      : {}),
+    datePublished: articolo.data,
+    ...(articolo.autore
+      ? { author: { "@type": "Person", name: articolo.autore.nome } }
+      : {}),
+    publisher: {
+      "@type": "Organization",
+      name: "Livello Zero",
+      logo: new URL("/logo.png", baseSito).toString(),
+    },
+    mainEntityOfPage: url,
+  };
+
   return (
     <article className="pagina-articolo">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(datiStrutturati).replace(/</g, "\\u003c"),
+        }}
+      />
       <BarraLettura />
       <IndiceArticolo voci={voci} />
       {altri.length > 0 && <ArticoliCorrelati articoli={altri} />}

@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Livello Zero — come nascono i videogiochi",
   description:
     "Approfondimenti, recensioni e consigli sui videogiochi, con attenzione a come vengono progettati e realizzati.",
+  robots: { "max-image-preview": "large" },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
