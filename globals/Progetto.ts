@@ -14,6 +14,7 @@ export const Progetto: GlobalConfig = {
   fields: [
     {
       name: 'titolo',
+      localized: true,
       type: 'text',
       required: true,
       defaultValue: 'Il progetto',
@@ -21,12 +22,14 @@ export const Progetto: GlobalConfig = {
     },
     {
       name: 'testo',
+      localized: true,
       type: 'richText',
       editor: editorTesto,
       label: 'Testo',
     },
     {
       name: 'donazioniTesto',
+      localized: true,
       type: 'textarea',
       label: 'Testo del riquadro donazioni',
     },

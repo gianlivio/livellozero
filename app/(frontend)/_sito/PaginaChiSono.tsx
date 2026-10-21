@@ -18,7 +18,7 @@ export function metadatiChiSono(lingua: Lingua): Metadata {
 
 export default async function PaginaChiSono({ lingua }: { lingua: Lingua }) {
   const t = testi(lingua);
-  const pagina = await leggiChiSono();
+  const pagina = await leggiChiSono(lingua);
   const foto = immagineDa(pagina.foto);
 
   // Per i dati strutturati: il global non ha il nome di chi scrive, l'autore
@@ -30,6 +30,8 @@ export default async function PaginaChiSono({ lingua }: { lingua: Lingua }) {
       sort: "createdAt",
       depth: 1,
       limit: 1,
+      locale: lingua,
+      fallbackLocale: false,
     })
   ).docs[0];
   const fotoAutore = autore ? immagineDa(autore.foto) : null;

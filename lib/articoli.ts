@@ -111,14 +111,12 @@ async function ottieniPayload() {
 }
 
 /**
- * Le opzioni di lingua da aggiungere a ogni lettura da Payload. Per ora
- * nessuna: la localizzazione non e' ancora attiva in payload.config.ts.
- * Quando lo sara', qui arriveranno locale e fallbackLocale: false, e tutte le
- * query di questo file le prenderanno da un punto solo.
+ * Le opzioni di lingua da aggiungere a ogni lettura da Payload. Niente
+ * ripiego: un campo che in quella lingua e' vuoto torna vuoto, non con il
+ * testo italiano al suo posto.
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function opzioniLingua(lingua: Lingua) {
-  return {};
+  return { locale: lingua, fallbackLocale: false as const };
 }
 
 /** La descrizione scritta nel pannello, o stringa vuota se non c'e'. */
@@ -193,7 +191,23 @@ export type Elenco = {
   haSuccessiva: boolean;
 };
 
-const PUBBLICATI: Where = { _status: { equals: "published" } };
+/**
+ * Quando un articolo esiste per il sito in una lingua. In italiano basta che
+ * sia pubblicato. In inglese serve anche la casella "Mostra la versione
+ * inglese" e uno slug inglese: lo stato di pubblicazione e' uno solo per tutte
+ * le lingue, e da solo non dice se la traduzione e' pronta.
+ */
+function pubblicati(lingua: Lingua): Where {
+  const pubblicato: Where = { _status: { equals: "published" } };
+  if (lingua === "it") return pubblicato;
+  return {
+    and: [
+      pubblicato,
+      { ingleseVisibile: { equals: true } },
+      { slug: { exists: true } },
+    ],
+  };
+}
 
 const ELENCO_VUOTO: Elenco = {
   articoli: [],
@@ -251,7 +265,7 @@ export async function tuttiGliArticoli(
   const payload = await ottieniPayload();
   const risultato = await payload.find({
     collection: "articoli",
-    where: PUBBLICATI,
+    where: pubblicati(lingua),
     sort: "-dataPubblicazione",
     depth: 2,
     limit: 0,
@@ -267,7 +281,7 @@ export async function articoliPerSitemap(
   const payload = await ottieniPayload();
   const risultato = await payload.find({
     collection: "articoli",
-    where: PUBBLICATI,
+    where: pubblicati(lingua),
     sort: "-dataPubblicazione",
     select: { slug: true, updatedAt: true },
     depth: 0,
@@ -284,7 +298,7 @@ export async function elencoArticoli(
   pagina = 1,
   lingua: Lingua = LINGUA_PREDEFINITA
 ): Promise<Elenco> {
-  return trovaElenco(PUBBLICATI, pagina, lingua);
+  return trovaElenco(pubblicati(lingua), pagina, lingua);
 }
 
 export async function articoliPerCategoria(
@@ -293,7 +307,7 @@ export async function articoliPerCategoria(
   lingua: Lingua = LINGUA_PREDEFINITA
 ): Promise<Elenco> {
   return trovaElenco(
-    { and: [PUBBLICATI, { categoria: { equals: categoria } }] },
+    { and: [pubblicati(lingua), { categoria: { equals: categoria } }] },
     pagina,
     lingua
   );
@@ -315,7 +329,7 @@ export async function cercaArticoli(
   return trovaElenco(
     {
       and: [
-        PUBBLICATI,
+        pubblicati(lingua),
         {
           or: [{ titolo: { like: termine } }, { sommario: { like: termine } }],
         },
@@ -348,7 +362,7 @@ export async function articoliCorrelati(
     ...query,
     where: {
       and: [
-        PUBBLICATI,
+        pubblicati(lingua),
         { categoria: { equals: articolo.categoria } },
         { slug: { not_equals: articolo.slug } },
       ],
@@ -363,7 +377,10 @@ export async function articoliCorrelati(
   const altri = await payload.find({
     ...query,
     where: {
-      and: [PUBBLICATI, { categoria: { not_equals: articolo.categoria } }],
+      and: [
+        pubblicati(lingua),
+        { categoria: { not_equals: articolo.categoria } },
+      ],
     },
     limit: quanti - correlati.length,
   });
@@ -382,12 +399,7 @@ export async function articoloPerSlug(
     collection: "articoli",
     where: anteprima
       ? { slug: { equals: slug } }
-      : {
-          and: [
-            { _status: { equals: "published" } },
-            { slug: { equals: slug } },
-          ],
-        },
+      : { and: [pubblicati(lingua), { slug: { equals: slug } }] },
     draft: anteprima,
     depth: 2,
     limit: 1,

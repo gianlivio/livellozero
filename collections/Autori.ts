@@ -22,6 +22,7 @@ export const Autori: CollectionConfig = {
     },
     {
       name: 'bio',
+      localized: true,
       type: 'textarea',
       label: 'Breve biografia',
       admin: {

@@ -90,7 +90,7 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  fallbackLocale: null;
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('it' | 'en') | ('it' | 'en')[];
   globals: {
     'chi-sono': ChiSono;
     progetto: Progetto;
@@ -101,7 +101,7 @@ export interface Config {
     progetto: ProgettoSelect<false> | ProgettoSelect<true>;
     categorie: CategorieSelect<false> | CategorieSelect<true>;
   };
-  locale: null;
+  locale: 'it' | 'en';
   widgets: {
     collections: CollectionsWidget;
   };
@@ -240,6 +240,10 @@ export interface Articoli {
   slug: string;
   categoria: 'approfondimenti' | 'recensioni' | 'consigli' | 'riflessioni' | 'classifiche';
   autore: number | Autori;
+  /**
+   * Accendila solo quando la traduzione inglese è completa e pubblicata.
+   */
+  ingleseVisibile?: boolean | null;
   /**
    * Due righe che compaiono in home e su Google.
    */
@@ -457,6 +461,7 @@ export interface ArticoliSelect<T extends boolean = true> {
   slug?: T;
   categoria?: T;
   autore?: T;
+  ingleseVisibile?: T;
   sommario?: T;
   titoloGoogle?: T;
   descrizioneGoogle?: T;

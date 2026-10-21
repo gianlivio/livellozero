@@ -14,6 +14,7 @@ export const ChiSono: GlobalConfig = {
   fields: [
     {
       name: 'titolo',
+      localized: true,
       type: 'text',
       required: true,
       defaultValue: 'Chi sono',
@@ -27,6 +28,7 @@ export const ChiSono: GlobalConfig = {
     },
     {
       name: 'testo',
+      localized: true,
       type: 'richText',
       editor: editorTesto,
       label: 'Testo',

@@ -1,5 +1,6 @@
 import { getPayload } from "payload";
 import config from "@/payload.config";
+import type { Lingua } from "@/lib/lingue";
 import type { ChiSono, Media, Progetto } from "@/payload-types";
 
 /** I due richText hanno la stessa forma: un tipo solo per tutti e due. */
@@ -10,14 +11,25 @@ async function ottieniPayload() {
   return getPayload({ config: resolvedConfig });
 }
 
-export async function leggiChiSono(): Promise<ChiSono> {
+/** Niente ripiego sull'italiano: un testo che manca in quella lingua resta vuoto. */
+export async function leggiChiSono(lingua: Lingua): Promise<ChiSono> {
   const payload = await ottieniPayload();
-  return payload.findGlobal({ slug: "chi-sono", depth: 2 });
+  return payload.findGlobal({
+    slug: "chi-sono",
+    depth: 2,
+    locale: lingua,
+    fallbackLocale: false,
+  });
 }
 
-export async function leggiProgetto(): Promise<Progetto> {
+export async function leggiProgetto(lingua: Lingua): Promise<Progetto> {
   const payload = await ottieniPayload();
-  return payload.findGlobal({ slug: "progetto", depth: 2 });
+  return payload.findGlobal({
+    slug: "progetto",
+    depth: 2,
+    locale: lingua,
+    fallbackLocale: false,
+  });
 }
 
 /**

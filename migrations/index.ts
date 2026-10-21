@@ -5,6 +5,7 @@ import * as migration_20260911_125754_formato_ritratto from './20260911_125754_f
 import * as migration_20260921_165038_pagine_editabili from './20260921_165038_pagine_editabili';
 import * as migration_20260925_055923_descrizioni_categorie from './20260925_055923_descrizioni_categorie';
 import * as migration_20261021_081347_campi_google from './20261021_081347_campi_google';
+import * as migration_20261021_134533_localizzazione from './20261021_134533_localizzazione';
 
 export const migrations = [
   {
@@ -40,6 +41,11 @@ export const migrations = [
   {
     up: migration_20261021_081347_campi_google.up,
     down: migration_20261021_081347_campi_google.down,
-    name: '20261021_081347_campi_google'
+    name: '20261021_081347_campi_google',
+  },
+  {
+    up: migration_20261021_134533_localizzazione.up,
+    down: migration_20261021_134533_localizzazione.down,
+    name: '20261021_134533_localizzazione'
   },
 ];

@@ -57,6 +57,16 @@ export default buildConfig({
   },
   collections: [Utenti, Media, Autori, Articoli],
   globals: [ChiSono, Progetto, Categorie],
+  // Italiano e inglese. Niente ripiego: un testo inglese che manca resta
+  // vuoto, non diventa quello italiano (vedi lib/articoli.ts, opzioniLingua).
+  localization: {
+    locales: [
+      { code: "it", label: "Italiano" },
+      { code: "en", label: "English" },
+    ],
+    defaultLocale: "it",
+    fallback: false,
+  },
   editor: lexicalEditor(),
   i18n: {
     supportedLanguages: { it },

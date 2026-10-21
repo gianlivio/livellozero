@@ -14,7 +14,7 @@ export function metadatiProgetto(lingua: Lingua): Metadata {
 
 export default async function PaginaProgetto({ lingua }: { lingua: Lingua }) {
   const t = testi(lingua);
-  const pagina = await leggiProgetto();
+  const pagina = await leggiProgetto(lingua);
 
   return (
     <section className="guscio pagina-progetto">

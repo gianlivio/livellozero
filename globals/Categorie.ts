@@ -61,6 +61,7 @@ export const Categorie: GlobalConfig = {
         },
         {
           name: 'descrizione',
+          localized: true,
           type: 'textarea',
           label: 'Descrizione',
         },

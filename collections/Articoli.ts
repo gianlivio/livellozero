@@ -82,12 +82,14 @@ export const Articoli: CollectionConfig = {
   fields: [
     {
       name: 'titolo',
+      localized: true,
       type: 'text',
       required: true,
       label: 'Titolo',
     },
     {
       name: 'slug',
+      localized: true,
       type: 'text',
       required: true,
       unique: true,
@@ -130,7 +132,22 @@ export const Articoli: CollectionConfig = {
       },
     },
     {
+      // Non localizzata apposta: e' l'interruttore che decide se la versione
+      // inglese esiste per il sito. Senza, "Pubblica modifiche" in italiano
+      // pubblicherebbe anche una traduzione inglese lasciata a meta' in bozza.
+      name: 'ingleseVisibile',
+      type: 'checkbox',
+      defaultValue: false,
+      label: 'Mostra la versione inglese',
+      admin: {
+        position: 'sidebar',
+        description:
+          'Accendila solo quando la traduzione inglese è completa e pubblicata.',
+      },
+    },
+    {
       name: 'sommario',
+      localized: true,
       type: 'textarea',
       required: true,
       maxLength: 300,
@@ -141,6 +158,7 @@ export const Articoli: CollectionConfig = {
     },
     {
       name: 'titoloGoogle',
+      localized: true,
       type: 'text',
       maxLength: 60,
       label: 'Titolo per Google',
@@ -151,6 +169,7 @@ export const Articoli: CollectionConfig = {
     },
     {
       name: 'descrizioneGoogle',
+      localized: true,
       type: 'textarea',
       maxLength: 160,
       label: 'Descrizione per Google',
@@ -168,6 +187,7 @@ export const Articoli: CollectionConfig = {
     },
     {
       name: 'corpo',
+      localized: true,
       type: 'richText',
       required: true,
       label: "Testo dell'articolo",
@@ -187,6 +207,7 @@ export const Articoli: CollectionConfig = {
     },
     {
       name: 'minuti',
+      localized: true,
       type: 'number',
       label: 'Minuti di lettura',
       admin: {

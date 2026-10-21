@@ -23,7 +23,7 @@ export default async function PaginaHome({
   const t = testi(lingua);
   const p = percorsi(lingua);
   const elenco = await elencoArticoli(pagina, lingua);
-  const chiSono = await leggiChiSono();
+  const chiSono = await leggiChiSono(lingua);
   const foto = immagineDa(chiSono.foto);
   const paragrafo = primoParagrafo(chiSono.testo);
 
