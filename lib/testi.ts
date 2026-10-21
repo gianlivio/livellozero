@@ -27,9 +27,11 @@ const it = {
   instagram: "Instagram",
   piede: "Livello Zero — progetto editoriale indipendente",
   cambiaTema: "Cambia tema",
-  // il selettore porta all'altra lingua: testo ed etichetta sono in quella
+  // il selettore porta all'altra lingua: testo ed etichetta sono in quella,
+  // e selettoreEtichettaLingua dice in che lingua e' scritta l'etichetta
   selettoreLingua: "EN",
   selettoreEtichetta: "Read in English",
+  selettoreEtichettaLingua: "en",
 
   // ricerca
   cerca: "Cerca",
@@ -107,8 +109,10 @@ const en: Testi = {
   instagram: "Instagram",
   piede: "Livello Zero — an independent editorial project",
   cambiaTema: "Change theme",
+  // nelle pagine inglesi niente italiano, neanche nelle etichette nascoste
   selettoreLingua: "IT",
-  selettoreEtichetta: "Leggi in italiano",
+  selettoreEtichetta: "Italian version",
+  selettoreEtichettaLingua: "en",
 
   cerca: "Search",
   cercaSegnaposto: "Search articles",

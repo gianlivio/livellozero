@@ -20,6 +20,7 @@ export default function SelettoreLingua({
   home,
   testo,
   etichetta,
+  linguaEtichetta,
 }: {
   /** La lingua di arrivo. */
   verso: Lingua;
@@ -27,6 +28,8 @@ export default function SelettoreLingua({
   home: string;
   testo: string;
   etichetta: string;
+  /** In che lingua e' scritta l'etichetta, per i lettori di schermo. */
+  linguaEtichetta: string;
 }) {
   // L'hreflang porta l'indirizzo pubblico del sito: se ne tiene solo il
   // percorso, cosi' in locale e nelle anteprime si resta sulla stessa copia.
@@ -52,7 +55,7 @@ export default function SelettoreLingua({
       className="selettore-lingua"
       href={home}
       hrefLang={verso}
-      lang={verso}
+      lang={linguaEtichetta}
       aria-label={etichetta}
       onMouseEnter={aggiorna}
       onFocus={aggiorna}

@@ -86,7 +86,9 @@ export default async function PaginaChiSono({ lingua }: { lingua: Lingua }) {
         </div>
       )}
       <div>
-        <h1>{pagina.titolo || t.chiSono}</h1>
+        {/* Il titolo del pannello solo con il testo nella stessa lingua:
+            senza, arriva il valore predefinito del campo, che e' in italiano. */}
+        <h1>{haTesto(pagina.testo) ? pagina.titolo : t.chiSono}</h1>
         {haTesto(pagina.testo) ? (
           <RichText data={pagina.testo!} />
         ) : (

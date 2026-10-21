@@ -8,7 +8,7 @@ import {
 } from "@/lib/articoli";
 import { homeIndicizzabile, NOINDEX } from "@/lib/indicizzabili";
 import { percorsi, percorsoArticolo, type Lingua } from "@/lib/lingue";
-import { immagineDa, leggiChiSono, primoParagrafo } from "@/lib/pagine";
+import { haTesto, immagineDa, leggiChiSono, primoParagrafo } from "@/lib/pagine";
 import { alternati, baseSito } from "@/lib/sito";
 import { testi } from "@/lib/testi";
 import Paginazione from "./Paginazione";
@@ -145,39 +145,44 @@ export default async function PaginaHome({
         </section>
       )}
 
-      <section className="guscio autore">
-        {foto && (
-          <div className="autore-foto">
-            <Image
-              src={foto.url!}
-              alt={foto.alt ?? ""}
-              width={foto.width ?? 400}
-              height={foto.height ?? 400}
-              sizes="(max-width: 760px) calc(100vw - 56px), 112px"
-              style={{ width: "100%", height: "auto" }}
-            />
+      {/* Il riquadro sull'autore solo se Chi sono ha un testo in questa
+          lingua: senza, il titolo arriverebbe dal valore predefinito del
+          campo, che e' in italiano ("Chi sono"). */}
+      {haTesto(chiSono.testo) && (
+        <section className="guscio autore">
+          {foto && (
+            <div className="autore-foto">
+              <Image
+                src={foto.url!}
+                alt={foto.alt ?? ""}
+                width={foto.width ?? 400}
+                height={foto.height ?? 400}
+                sizes="(max-width: 760px) calc(100vw - 56px), 112px"
+                style={{ width: "100%", height: "auto" }}
+              />
+            </div>
+          )}
+          <div className="autore-testo">
+            <h2>{chiSono.titolo}</h2>
+            {paragrafo && <p>{paragrafo}</p>}
+            <div className="autore-link">
+              {chiSono.instagram && (
+                <a
+                  href={`https://instagram.com/${chiSono.instagram}`}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  {t.instagram}
+                </a>
+              )}
+              {chiSono.email && (
+                <a href={`mailto:${chiSono.email}`}>{t.scrivimi}</a>
+              )}
+              <Link href={p.progetto}>{t.sostieni}</Link>
+            </div>
           </div>
-        )}
-        <div className="autore-testo">
-          <h2>{chiSono.titolo || t.chiSono}</h2>
-          {paragrafo && <p>{paragrafo}</p>}
-          <div className="autore-link">
-            {chiSono.instagram && (
-              <a
-                href={`https://instagram.com/${chiSono.instagram}`}
-                rel="noreferrer"
-                target="_blank"
-              >
-                {t.instagram}
-              </a>
-            )}
-            {chiSono.email && (
-              <a href={`mailto:${chiSono.email}`}>{t.scrivimi}</a>
-            )}
-            <Link href={p.progetto}>{t.sostieni}</Link>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
     </>
   );
 }

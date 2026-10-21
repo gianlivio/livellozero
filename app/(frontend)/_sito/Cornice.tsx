@@ -84,6 +84,7 @@ export function Testata({
           home={percorsi(altraLingua(lingua)).home}
           testo={t.selettoreLingua}
           etichetta={t.selettoreEtichetta}
+          linguaEtichetta={t.selettoreEtichettaLingua}
         />
         <InterruttoreTema etichetta={t.cambiaTema} />
       </div>

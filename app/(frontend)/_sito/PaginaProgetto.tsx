@@ -31,7 +31,9 @@ export default async function PaginaProgetto({ lingua }: { lingua: Lingua }) {
 
   return (
     <section className="guscio pagina-progetto">
-      <h1>{pagina.titolo || t.progettoTitolo}</h1>
+      {/* Il titolo del pannello solo con il testo nella stessa lingua: senza,
+          arriva il valore predefinito del campo, che e' in italiano. */}
+      <h1>{haTesto(pagina.testo) ? pagina.titolo : t.progettoTitolo}</h1>
       {!haTesto(pagina.testo) && <p>{t.paginaVuota}</p>}
       {haTesto(pagina.testo) && (
         <RichText className="progetto-corpo" data={pagina.testo!} />
