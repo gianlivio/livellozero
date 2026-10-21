@@ -17,16 +17,21 @@ function generaSlug(testo: string): string {
 function rivalidaPercorsi(doc: { categoria?: unknown; slug?: unknown } | null | undefined) {
   if (!doc) return
   try {
+    console.log('[rivalida] percorso', '/')
     revalidatePath('/')
+    console.log('[rivalida] percorso', '/sitemap.xml')
     revalidatePath('/sitemap.xml')
     if (typeof doc.categoria === 'string') {
+      console.log('[rivalida] percorso', `/${doc.categoria}`)
       revalidatePath(`/${doc.categoria}`)
     }
     if (typeof doc.slug === 'string') {
+      console.log('[rivalida] percorso', `/articoli/${doc.slug}`)
       revalidatePath(`/articoli/${doc.slug}`)
     }
-  } catch {
+  } catch (errore) {
     // Payload gira fuori da un contesto Next (es. CLI/migrazioni): niente da rigenerare
+    console.error('[rivalida] errore', errore)
   }
 }
 
