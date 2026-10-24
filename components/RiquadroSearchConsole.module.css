@@ -13,6 +13,60 @@
   margin: 0 0 4px;
 }
 
+/* Il selettore del periodo: voce, date (solo per Personalizzato) e Mostra,
+   su una riga che va a capo quando non c'e' spazio. */
+.selettore {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  margin: 12px 0 16px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--theme-elevation-600);
+}
+
+.campo select,
+.campo input {
+  height: 32px;
+  padding: 0 8px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--theme-text);
+  background: var(--theme-input-bg, var(--theme-elevation-0));
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--style-radius-s, 3px);
+}
+
+.date {
+  display: none;
+  gap: 12px;
+}
+
+/* Senza JavaScript: le date compaiono solo quando e' scelto Personalizzato. */
+.selettore:has(option[value="personalizzato"]:checked) .date {
+  display: flex;
+}
+
+.selettore button {
+  margin: 0;
+}
+
+.intervallo {
+  font-size: 13px;
+  margin: 12px 0 4px;
+}
+
+.avviso {
+  color: var(--theme-error-500);
+  margin: 8px 0 0;
+}
+
 .sottotitolo {
   font-size: 15px;
   margin: 28px 0 10px;
