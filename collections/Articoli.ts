@@ -1,7 +1,7 @@
 import type { CollectionConfig, PayloadRequest } from 'payload'
 import { revalidatePath } from 'next/cache'
 import { editorTesto } from '../editor'
-import { percorsoArticolo, type Lingua } from '../lib/lingue'
+import { percorsi as percorsiFissi, percorsoArticolo, type Lingua } from '../lib/lingue'
 import { percorsoCategoria, type Categoria } from '../lib/sezioni'
 
 const LINGUE: Lingua[] = ['it', 'en']
@@ -17,6 +17,12 @@ function generaSlug(testo: string): string {
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '')
 }
+
+/** I file delle rotte della pagina articolo, uno per lingua. */
+const ROTTE_ARTICOLO = [
+  '/(frontend)/(it)/articoli/[slug]',
+  '/(frontend)/(en)/en/articles/[slug]',
+]
 
 type SlugPerLingua = Partial<Record<Lingua, string | null>>
 
@@ -41,6 +47,13 @@ async function slugPerLingua(
  * Le pagine che mostrano un articolo, in tutte le lingue: le due home, la
  * sitemap, la sezione e la pagina dell'articolo. Una lingua senza slug non ha
  * la pagina dell'articolo, quindi non c'e' niente da rigenerare.
+ *
+ * Un articolo puo' anche essere collegato dal corpo di un altro (collegamenti
+ * interni): il collegamento dipende dallo slug, dallo stato e da
+ * "Mostra la versione inglese" del documento collegato. Quindi a ogni
+ * salvataggio si invalidano anche tutte le pagine articolo e le pagine
+ * ferme, che hanno lo stesso editor. Il percorso e' quello del file della
+ * rotta, con i gruppi di cartelle, e il tipo 'page' prende tutti gli slug.
  */
 function rivalidaPercorsi({
   categorie,
@@ -64,10 +77,18 @@ function rivalidaPercorsi({
       }
     }
   }
+  for (const lingua of LINGUE) {
+    percorsi.add(percorsiFissi(lingua).chiSono)
+    percorsi.add(percorsiFissi(lingua).progetto)
+  }
   try {
     for (const percorso of percorsi) {
       console.log('[rivalida] percorso', percorso)
       revalidatePath(percorso)
+    }
+    for (const rotta of ROTTE_ARTICOLO) {
+      console.log('[rivalida] rotta', rotta)
+      revalidatePath(rotta, 'page')
     }
   } catch (errore) {
     // Payload gira fuori da un contesto Next (es. CLI/migrazioni): niente da rigenerare
@@ -127,6 +148,14 @@ export const Articoli: CollectionConfig = {
         })
       },
     ],
+  },
+  // Quando un articolo viene popolato da un altro documento (oggi solo i
+  // collegamenti interni del testo) arrivano solo i campi che servono a
+  // costruire l'indirizzo, non l'articolo intero.
+  defaultPopulate: {
+    slug: true,
+    ingleseVisibile: true,
+    _status: true,
   },
   versions: {
     drafts: true,

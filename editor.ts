@@ -23,7 +23,8 @@ export const editorTesto = lexicalEditor({
     ItalicFeature(),
     HeadingFeature({ enabledHeadingSizes: ['h2', 'h3'] }),
     BlockquoteFeature(),
-    LinkFeature(),
+    // Il collegamento interno propone solo gli articoli; l'URL personalizzato resta.
+    LinkFeature({ enabledCollections: ['articoli'] }),
     UploadFeature({
       collections: {
         media: {

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { RichText } from "@payloadcms/richtext-lexical/react";
+import { convertitoriTesto } from "./convertitori";
 import { getPayload } from "payload";
 import config from "@/payload.config";
 import { NOINDEX, paginaFissaIndicizzabile } from "@/lib/indicizzabili";
@@ -90,7 +91,7 @@ export default async function PaginaChiSono({ lingua }: { lingua: Lingua }) {
             senza, arriva il valore predefinito del campo, che e' in italiano. */}
         <h1>{haTesto(pagina.testo) ? pagina.titolo : t.chiSono}</h1>
         {haTesto(pagina.testo) ? (
-          <RichText data={pagina.testo!} />
+          <RichText data={pagina.testo!} converters={convertitoriTesto(lingua)} />
         ) : (
           <p>{t.paginaVuota}</p>
         )}

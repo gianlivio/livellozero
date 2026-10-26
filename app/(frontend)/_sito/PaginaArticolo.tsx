@@ -2,10 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  RichText,
-  type JSXConvertersFunction,
-} from "@payloadcms/richtext-lexical/react";
+import { RichText } from "@payloadcms/richtext-lexical/react";
 import {
   articoliCorrelati,
   articoloPerSlug,
@@ -25,13 +22,13 @@ import {
 } from "@/lib/lingue";
 import { alternati, baseSito, urlArticolo } from "@/lib/sito";
 import { testi } from "@/lib/testi";
+import { convertitoriTesto } from "./convertitori";
 import ArticoliCorrelati from "./articolo/ArticoliCorrelati";
 import BarraLettura from "./articolo/BarraLettura";
 import Condivisione from "./articolo/Condivisione";
 import IndiceArticolo from "./articolo/IndiceArticolo";
 
-const convertitori: JSXConvertersFunction = ({ defaultConverters }) => ({
-  ...defaultConverters,
+const convertitoriArticolo = (lingua: Lingua) => convertitoriTesto(lingua, {
   // Come il converter di serie, ma gli h2 prendono l'id della loro ancora:
   // sono le sezioni a cui punta l'indice a lato.
   heading: ({ node, nodesToJSX, parent, childIndex }) => {
@@ -252,7 +249,7 @@ export default async function PaginaArticolo({
       <RichText
         className="articolo-corpo"
         data={articolo.corpo}
-        converters={convertitori}
+        converters={convertitoriArticolo(lingua)}
       />
 
       <Condivisione url={url} titolo={articolo.titolo} lingua={lingua} />

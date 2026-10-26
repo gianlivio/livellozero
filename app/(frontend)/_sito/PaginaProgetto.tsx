@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { RichText } from "@payloadcms/richtext-lexical/react";
+import { convertitoriTesto } from "./convertitori";
 import { NOINDEX, paginaFissaIndicizzabile } from "@/lib/indicizzabili";
 import { percorsi, type Lingua } from "@/lib/lingue";
 import { haTesto, leggiProgetto } from "@/lib/pagine";
@@ -36,7 +37,11 @@ export default async function PaginaProgetto({ lingua }: { lingua: Lingua }) {
       <h1>{haTesto(pagina.testo) ? pagina.titolo : t.progettoTitolo}</h1>
       {!haTesto(pagina.testo) && <p>{t.paginaVuota}</p>}
       {haTesto(pagina.testo) && (
-        <RichText className="progetto-corpo" data={pagina.testo!} />
+        <RichText
+          className="progetto-corpo"
+          data={pagina.testo!}
+          converters={convertitoriTesto(lingua)}
+        />
       )}
       {(pagina.donazioniTesto || pagina.donazioniLink) && (
         <div className="progetto-sostegno">
