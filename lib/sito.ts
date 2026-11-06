@@ -9,6 +9,9 @@ export const baseSito = new URL(
   process.env.NEXT_PUBLIC_SITE_URL || "https://livellozero.vercel.app"
 );
 
+/** Il profilo Instagram del sito: footer e dati strutturati leggono da qui. */
+export const urlInstagram = "https://www.instagram.com/livellozero.games/";
+
 export function urlArticolo(
   slug: string,
   lingua: Lingua = LINGUA_PREDEFINITA

@@ -9,7 +9,7 @@ import {
 import { homeIndicizzabile, NOINDEX } from "@/lib/indicizzabili";
 import { percorsi, percorsoArticolo, type Lingua } from "@/lib/lingue";
 import { haTesto, immagineDa, leggiChiSono, primoParagrafo } from "@/lib/pagine";
-import { alternati, baseSito } from "@/lib/sito";
+import { alternati, baseSito, urlInstagram } from "@/lib/sito";
 import { testi } from "@/lib/testi";
 import Paginazione from "./Paginazione";
 import Pezzo from "./Pezzo";
@@ -65,6 +65,7 @@ export default async function PaginaHome({
       name: "Livello Zero",
       url: urlHome,
       logo: new URL("/logo.png", baseSito).toString(),
+      sameAs: [urlInstagram],
     },
   ];
 

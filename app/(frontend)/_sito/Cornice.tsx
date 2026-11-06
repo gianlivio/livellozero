@@ -8,6 +8,7 @@ import {
   percorsi,
   type Lingua,
 } from "@/lib/lingue";
+import { urlInstagram } from "@/lib/sito";
 import { testi } from "@/lib/testi";
 import CampoRicerca from "./CampoRicerca";
 import Marchio from "./Marchio";
@@ -101,7 +102,9 @@ export function Piede({ lingua = LINGUA_PREDEFINITA }: { lingua?: Lingua }) {
       <div className="piede-link">
         <Link href={p.progetto}>{t.progetto}</Link>
         <Link href={p.chiSono}>{t.chiSono}</Link>
-        <a href="#">{t.instagram}</a>
+        <a href={urlInstagram} rel="noreferrer" target="_blank">
+          {t.instagram}
+        </a>
       </div>
     </footer>
   );
