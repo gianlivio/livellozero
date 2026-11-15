@@ -12,6 +12,7 @@ import { Media } from "./collections/Media";
 import { Articoli } from "./collections/Articoli";
 import { Autori } from "./collections/Autori";
 import { ChiSono } from "./globals/ChiSono";
+import { Home } from "./globals/Home";
 import { Progetto } from "./globals/Progetto";
 import { Categorie } from "./globals/Categorie";
 import { migrations } from "./migrations";
@@ -61,7 +62,7 @@ export default buildConfig({
     },
   },
   collections: [Utenti, Media, Autori, Articoli],
-  globals: [ChiSono, Progetto, Categorie],
+  globals: [ChiSono, Progetto, Categorie, Home],
   // Italiano e inglese. Niente ripiego: un testo inglese che manca resta
   // vuoto, non diventa quello italiano (vedi lib/articoli.ts, opzioniLingua).
   localization: {

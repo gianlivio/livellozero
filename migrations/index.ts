@@ -7,6 +7,7 @@ import * as migration_20260925_055923_descrizioni_categorie from './20260925_055
 import * as migration_20261021_081347_campi_google from './20261021_081347_campi_google';
 import * as migration_20261021_134533_localizzazione from './20261021_134533_localizzazione';
 import * as migration_20261021_151340_titoli_predefiniti_per_lingua from './20261021_151340_titoli_predefiniti_per_lingua';
+import * as migration_20261115_195354_home_google from './20261115_195354_home_google';
 
 export const migrations = [
   {
@@ -52,6 +53,11 @@ export const migrations = [
   {
     up: migration_20261021_151340_titoli_predefiniti_per_lingua.up,
     down: migration_20261021_151340_titoli_predefiniti_per_lingua.down,
-    name: '20261021_151340_titoli_predefiniti_per_lingua'
+    name: '20261021_151340_titoli_predefiniti_per_lingua',
+  },
+  {
+    up: migration_20261115_195354_home_google.up,
+    down: migration_20261115_195354_home_google.down,
+    name: '20261115_195354_home_google'
   },
 ];

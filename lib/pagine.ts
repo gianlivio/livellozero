@@ -22,6 +22,32 @@ export async function leggiChiSono(lingua: Lingua): Promise<ChiSono> {
   });
 }
 
+/**
+ * Titolo e descrizione per Google della home, se compilati in quella lingua.
+ * Un campo vuoto torna null: la home tiene allora i testi di sempre. La
+ * lettura non deve mai rompere la home, che e' solo metadati.
+ */
+export async function leggiMetadatiHome(
+  lingua: Lingua
+): Promise<{ titolo: string | null; descrizione: string | null }> {
+  try {
+    const payload = await ottieniPayload();
+    const home = await payload.findGlobal({
+      slug: "home",
+      depth: 0,
+      locale: lingua,
+      fallbackLocale: false,
+    });
+    return {
+      titolo: home.titoloGoogle?.trim() || null,
+      descrizione: home.descrizioneGoogle?.trim() || null,
+    };
+  } catch (errore) {
+    console.error("[home] metadati non letti", errore);
+    return { titolo: null, descrizione: null };
+  }
+}
+
 export async function leggiProgetto(lingua: Lingua): Promise<Progetto> {
   const payload = await ottieniPayload();
   return payload.findGlobal({

@@ -95,11 +95,13 @@ export interface Config {
     'chi-sono': ChiSono;
     progetto: Progetto;
     categorie: Categorie;
+    home: Home;
   };
   globalsSelect: {
     'chi-sono': ChiSonoSelect<false> | ChiSonoSelect<true>;
     progetto: ProgettoSelect<false> | ProgettoSelect<true>;
     categorie: CategorieSelect<false> | CategorieSelect<true>;
+    home: HomeSelect<false> | HomeSelect<true>;
   };
   locale: 'it' | 'en';
   widgets: {
@@ -589,6 +591,23 @@ export interface Categorie {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home".
+ */
+export interface Home {
+  id: number;
+  /**
+   * Facoltativo, massimo 60 caratteri. Se vuoto resta il titolo attuale.
+   */
+  titoloGoogle?: string | null;
+  /**
+   * Facoltativa, ideale tra 140 e 155 caratteri. Se vuota resta la descrizione attuale.
+   */
+  descrizioneGoogle?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "chi-sono_select".
  */
 export interface ChiSonoSelect<T extends boolean = true> {
@@ -626,6 +645,17 @@ export interface CategorieSelect<T extends boolean = true> {
         descrizione?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home_select".
+ */
+export interface HomeSelect<T extends boolean = true> {
+  titoloGoogle?: T;
+  descrizioneGoogle?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

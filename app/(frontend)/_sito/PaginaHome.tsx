@@ -7,8 +7,19 @@ import {
   percorsoCategoria,
 } from "@/lib/articoli";
 import { homeIndicizzabile, NOINDEX } from "@/lib/indicizzabili";
-import { percorsi, percorsoArticolo, type Lingua } from "@/lib/lingue";
-import { haTesto, immagineDa, leggiChiSono, primoParagrafo } from "@/lib/pagine";
+import {
+  localeOg,
+  percorsi,
+  percorsoArticolo,
+  type Lingua,
+} from "@/lib/lingue";
+import {
+  haTesto,
+  immagineDa,
+  leggiChiSono,
+  leggiMetadatiHome,
+  primoParagrafo,
+} from "@/lib/pagine";
 import { alternati, baseSito, urlInstagram } from "@/lib/sito";
 import { testi } from "@/lib/testi";
 import Paginazione from "./Paginazione";
@@ -16,12 +27,25 @@ import Pezzo from "./Pezzo";
 
 /** Noindex e hreflang: le regole stanno in lib/indicizzabili.ts. */
 export async function metadatiHome(lingua: Lingua): Promise<Metadata> {
-  const [it, en] = await Promise.all([
+  const [it, en, google] = await Promise.all([
     homeIndicizzabile("it"),
     homeIndicizzabile("en"),
+    leggiMetadatiHome(lingua),
   ]);
   const qui = lingua === "it" ? it : en;
   return {
+    // Se compilati nel pannello, valgono al posto di quelli del layout, senza
+    // suffisso. L'openGraph della pagina sostituisce per intero quello del
+    // layout: og:locale va ripetuto.
+    ...(google.titolo && { title: google.titolo }),
+    ...(google.descrizione && { description: google.descrizione }),
+    ...((google.titolo || google.descrizione) && {
+      openGraph: {
+        locale: localeOg(lingua),
+        ...(google.titolo && { title: google.titolo }),
+        ...(google.descrizione && { description: google.descrizione }),
+      },
+    }),
     ...(!qui && NOINDEX),
     alternates: alternati({
       it: it ? percorsi("it").home : null,

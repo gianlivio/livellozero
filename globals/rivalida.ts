@@ -17,3 +17,13 @@ export function rivalidaPagine() {
     // Payload gira fuori da un contesto Next (es. CLI/migrazioni): niente da rigenerare
   }
 }
+
+/** Titolo e descrizione per Google riguardano solo le due home. */
+export function rivalidaHome() {
+  try {
+    revalidatePath('/')
+    revalidatePath('/en')
+  } catch {
+    // Payload gira fuori da un contesto Next (es. CLI/migrazioni): niente da rigenerare
+  }
+}
