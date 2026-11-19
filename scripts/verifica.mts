@@ -74,12 +74,18 @@ async function prendi(percorso: string): Promise<Risposta> {
   }
 }
 
-/** Per le immagini basta lo stato: il corpo si butta senza scaricarlo tutto. */
+/** Per le immagini basta lo stato: il corpo si butta senza scaricarlo tutto.
+ *  A /_next/image si chiede come fa un browser moderno, AVIF e WebP. */
 async function stato(url: string): Promise<number> {
   try {
     const r = await fetch(url, {
       redirect: "follow",
-      headers: { "user-agent": "verifica-livellozero" },
+      headers: {
+        "user-agent": "verifica-livellozero",
+        ...(url.includes("/_next/image") && {
+          accept: "image/avif,image/webp",
+        }),
+      },
     });
     await r.body?.cancel();
     return r.status;
@@ -151,20 +157,35 @@ function hreflang(html: string, lingua: string): string {
   return scioglieEntita(tag?.match(/href="([^"]+)"/)?.[1] ?? "");
 }
 
-/** Ogni indirizzo d'immagine citato nella pagina: src e tutte le voci di
- *  srcset, che next/image riempie di varianti a larghezze diverse. */
+/** La larghezza su cui si controlla la variante di /_next/image: una sola per
+ *  immagine, la piu' vicina a questa tra quelle dello srcset. */
+const LARGHEZZA_VARIANTE = 828;
+
+/** Per ogni <img> della pagina: la variante di /_next/image piu' vicina a
+ *  LARGHEZZA_VARIANTE tra quelle dello srcset (l'originale si ricava dal suo
+ *  parametro url=, vedi originale). Senza srcset, il src. Controllarle tutte
+ *  moltiplicherebbe le richieste senza dire niente di piu'. */
 function immagini(html: string): string[] {
   const urls: string[] = [];
   for (const tag of html.matchAll(/<img\b[^>]*>/g)) {
-    const src = tag[0].match(/\bsrc="([^"]+)"/);
-    if (src) urls.push(src[1]);
-    const srcset = tag[0].match(/\bsrcset="([^"]+)"/);
+    // React lo scrive srcSet: senza la i non si trova mai.
+    const srcset = tag[0].match(/\bsrcset="([^"]+)"/i);
     if (srcset) {
+      let scelta: { indirizzo: string; distanza: number } | undefined;
       for (const voce of srcset[1].split(",")) {
-        const indirizzo = voce.trim().split(/\s+/)[0];
-        if (indirizzo) urls.push(indirizzo);
+        const [indirizzo, descrittore] = voce.trim().split(/\s+/);
+        const larghezza = Number.parseInt(descrittore ?? "", 10);
+        if (!indirizzo || !Number.isFinite(larghezza)) continue;
+        const distanza = Math.abs(larghezza - LARGHEZZA_VARIANTE);
+        if (!scelta || distanza < scelta.distanza) scelta = { indirizzo, distanza };
+      }
+      if (scelta) {
+        urls.push(scelta.indirizzo);
+        continue;
       }
     }
+    const src = tag[0].match(/\bsrc="([^"]+)"/);
+    if (src) urls.push(src[1]);
   }
   return urls.map(scioglieEntita);
 }
